@@ -9,7 +9,6 @@ import com.kakuom.finaltipping.repositories.PassTokenRepository;
 import com.kakuom.finaltipping.repositories.UserRepository;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.JwtResponse;
-import com.kakuom.finaltipping.security.JwtProperties;
 import com.kakuom.finaltipping.security.JwtProvider;
 import com.kakuom.finaltipping.security.UserPrincipal;
 import com.kakuom.finaltipping.views.LoginView;
@@ -24,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
@@ -72,14 +70,8 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User newUser = new User(registerView.getName(), registerView.getEmail(),
-                encoder.encode(registerView.getPassword()));
+                encoder.encode(registerView.getPassword()), Role.USER);
 
-        var userRole = registerView.getRole();
-        if (StringUtils.hasText(userRole) && userRole.equals(JwtProperties.ADMIN_CODE)) {
-            newUser.setRole(Role.ADMIN);
-        } else {
-            newUser.setRole(Role.USER);
-        }
 
         var groupIds = registerView.getGroupIds();
         if (groupIds != null && !groupIds.isEmpty()) {

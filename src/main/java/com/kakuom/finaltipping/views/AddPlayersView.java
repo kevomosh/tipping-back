@@ -1,9 +1,14 @@
 package com.kakuom.finaltipping.views;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
 public class AddPlayersView {
+    @NotBlank
     private String teamName;
+
+    @NotEmpty
     private Set<PlayerView> players;
 
     public AddPlayersView(String teamName, Set<PlayerView> players) {

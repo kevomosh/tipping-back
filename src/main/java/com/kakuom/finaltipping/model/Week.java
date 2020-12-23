@@ -37,6 +37,7 @@ public class Week {
 
     private Integer margin;
 
+    @Column(length = 40)
     private String firstScorer;
 
     @Column(length = 3)

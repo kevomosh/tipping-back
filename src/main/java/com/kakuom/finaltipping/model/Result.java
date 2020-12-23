@@ -12,6 +12,7 @@ public class Result {
 
     private Integer gameNumber;
 
+    @Column(length = 20)
     private String team;
 
     @JsonIgnore

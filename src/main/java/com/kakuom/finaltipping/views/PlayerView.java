@@ -1,7 +1,12 @@
 package com.kakuom.finaltipping.views;
 
+import javax.validation.constraints.NotBlank;
+
 public class PlayerView {
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
 
     public PlayerView(String firstName, String lastName) {

@@ -5,14 +5,17 @@ import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.services.AdminService;
 import com.kakuom.finaltipping.views.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/nrl/admin/")
 @CrossOrigin
+@PreAuthorize("hasRole('ADMIN')")
 public class NrlAdminController {
     private AdminService adminService;
 
@@ -21,13 +24,13 @@ public class NrlAdminController {
     }
 
     @PostMapping("createGroups")
-    public BasicResponse createGroups(@RequestBody StringSetView view) {
+    public BasicResponse createGroups(@Valid @RequestBody StringSetView view) {
         return adminService.createGroups(view, Comp.NRL);
     }
 
     @PostMapping("createTeams")
     public BasicResponse createTeams(
-            @RequestBody StringSetView view
+            @Valid @RequestBody StringSetView view
     ) {
         return adminService.createTeams(view, Comp.NRL);
     }
@@ -35,25 +38,25 @@ public class NrlAdminController {
 
     @PostMapping("addPlayersToTeams")
     public BasicResponse addPlayers(
-            @RequestBody List<AddPlayersView> addPlayersViewList
+            @Valid @RequestBody AddPlayersView addPlayersView
     ) {
-        return adminService.addPlayersToTeam(addPlayersViewList, Comp.NRL);
+        return adminService.addPlayersToTeam(addPlayersView, Comp.NRL);
     }
 
     @PostMapping("createWeek")
-    public BasicResponse createWeek(@RequestBody CreateWeekView createWeekView) {
+    public BasicResponse createWeek(@Valid @RequestBody CreateWeekView createWeekView) {
         return adminService.createWeek(createWeekView, Comp.NRL);
     }
 
     @PutMapping("changeDeadLine/{weekNumber}")
     public OffsetDateTime changeDeadLine(@PathVariable Integer weekNumber,
-                                         @RequestBody DateView dateView) {
+                                         @Valid @RequestBody DateView dateView) {
         return adminService.changeDeadline(dateView, weekNumber, Comp.NRL);
     }
 
     @PostMapping("addResults/{weekNumber}")
     public BasicResponse addResults(@PathVariable Integer weekNumber,
-                                    @RequestBody ResultView resultView) {
+                                    @Valid @RequestBody ResultView resultView) {
         return adminService.addResults(weekNumber, resultView, Comp.NRL);
     }
 

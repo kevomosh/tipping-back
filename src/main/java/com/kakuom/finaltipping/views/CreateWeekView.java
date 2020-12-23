@@ -2,13 +2,22 @@ package com.kakuom.finaltipping.views;
 
 import com.kakuom.finaltipping.dto.GameDTO;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class CreateWeekView {
+    @NotNull
+    @Min(value = 1)
+    @Max(value = 40)
     private Integer weekNumber;
 
+    @NotNull
     private DateView dateView;
 
+    @NotEmpty
     private List<GameDTO> gamesToPlay;
 
 

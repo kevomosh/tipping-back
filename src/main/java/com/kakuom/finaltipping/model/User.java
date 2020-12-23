@@ -15,9 +15,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 50)
     private String name;
 
     @NaturalId
+    @Column(length = 60)
     private String email;
 
     private String password;
@@ -65,10 +67,11 @@ public class User {
     public User() {
     }
 
-    public User(String name, String email, String password) {
+    public User(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.role = role;
         this.nrlTotalScore = 0;
         this.aflTotalScore = 0;
         this.nrlLastScore = 0;

@@ -18,17 +18,14 @@ public class RegisterView {
     @Size(min = 5, max = 60)
     private String password;
 
-    private String role;
-
     private Set<Long> groupIds;
 
     public RegisterView(@NotBlank(message = "Name is required") @Size(min = 3, max = 50) String name,
                         @NotBlank(message = "email is required") @Size(max = 60) @Email String email,
-                        @NotBlank @Size(min = 5, max = 60) String password, String role, Set<Long> groupIds) {
+                        @NotBlank @Size(min = 5, max = 60) String password, Set<Long> groupIds) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.role = role;
         this.groupIds = groupIds;
     }
 
@@ -56,13 +53,6 @@ public class RegisterView {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
 
     public Set<Long> getGroupIds() {
         return groupIds;

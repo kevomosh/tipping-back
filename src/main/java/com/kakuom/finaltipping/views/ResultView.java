@@ -2,6 +2,7 @@ package com.kakuom.finaltipping.views;
 
 import com.kakuom.finaltipping.dto.WeekResultDTO;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
 public class ResultView {
@@ -9,6 +10,7 @@ public class ResultView {
 
     private String firstScorer;
 
+    @NotEmpty
     private Set<WeekResultDTO> resultViewSet;
 
     public ResultView(Integer margin, String firstScorer, Set<WeekResultDTO> resultViewSet) {

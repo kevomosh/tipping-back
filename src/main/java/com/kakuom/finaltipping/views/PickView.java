@@ -1,12 +1,20 @@
 package com.kakuom.finaltipping.views;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 public class PickView {
+    @NotBlank(message = "Id required")
     private Long userId;
 
+    @NotBlank(message = "week number required")
+    @Min(0)
+    @Max(25)
     private Integer weekNumber;
 
+    @NotBlank()
     private List<SelectedView> selectedViewList;
 
     private Integer margin;

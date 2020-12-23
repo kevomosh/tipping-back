@@ -46,113 +46,111 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public BasicResponse addResults(Integer weekNumber, ResultView resultView, Comp comp) {
-        return weekRepository.findByNumber(weekNumber, comp)
-                .map(week -> {
-                    if (OffsetDateTime.now().isBefore(week.getDeadLine()) || week.getScoreUpdated()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                "Its before deadline. Tulia. or total scores have already been updated");
-                    }
-                    if (week.getMargin() != null) {
-                        resultView.setMargin(null);
-                    }
-                    if (week.getFirstScorer() != null) {
-                        resultView.setFirstScorer(null);
-                    }
+        var week = weekRepository.findByNumber(weekNumber, comp).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
 
-                    var gameNumberResultsAlreadyIn = resultRepository.getGameNumbersForWeek(week.getId());
+        if (OffsetDateTime.now().isBefore(week.getDeadLine()) || week.getScoreUpdated()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Its before deadline. Tulia. or total scores have already been updated");
+        }
+        if (week.getMargin() != null) {
+            resultView.setMargin(null);
+        }
+        if (week.getFirstScorer() != null) {
+            resultView.setFirstScorer(null);
+        }
 
-                    List<Integer> gameNumberList = new ArrayList<>();
-                    List<Result> resultList = new ArrayList<>();
+        var gameNumberResultsAlreadyIn = resultRepository.getGameNumbersForWeek(week.getId());
 
-                    resultView.getResultViewSet().stream()
-                            .filter(g -> !gameNumberResultsAlreadyIn.contains(g.getGameNumber()))
-                            .map(r -> new Result(r.getGameNumber(), r.getTeam()))
-                            .sorted(Comparator.comparingInt(Result::getGameNumber))
-                            .forEach(z -> {
-                                gameNumberList.add(z.getGameNumber());
-                                week.addResult(z);
-                                resultList.add(z);
-                            });
+        List<Integer> gameNumberList = new ArrayList<>();
+        List<Result> resultList = new ArrayList<>();
 
-                    if (resultList.isEmpty()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Results you want to add already " +
-                                "added before");
-                    }
+        resultView.getResultViewSet().stream()
+                .filter(g -> !gameNumberResultsAlreadyIn.contains(g.getGameNumber()))
+                .map(r -> new Result(r.getGameNumber(), r.getTeam()))
+                .sorted(Comparator.comparingInt(Result::getGameNumber))
+                .forEach(z -> {
+                    gameNumberList.add(z.getGameNumber());
+                    week.addResult(z);
+                    resultList.add(z);
+                });
 
-                    if (gameNumberList.contains(2) && resultView.getMargin() != null) {
-                        week.setMargin(resultView.getMargin());
-                    }
-                    if (gameNumberList.contains(1) && resultView.getFirstScorer() != null) {
-                        week.setFirstScorer(resultView.getFirstScorer());
-                    }
+        if (resultList.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Results you want to add already " +
+                    "added before");
+        }
 
-                    weekRepository.save(week);
+        if (gameNumberList.contains(2) && resultView.getMargin() != null) {
+            week.setMargin(resultView.getMargin());
+        }
+        if (gameNumberList.contains(1) && resultView.getFirstScorer() != null) {
+            week.setFirstScorer(resultView.getFirstScorer());
+        }
 
-                    var allPicksForWeek = pickRepository.getAllWithWeekNumber(weekNumber, comp);
+        weekRepository.save(week);
 
-                    for (Pick pick : allPicksForWeek) {
-                        var score = 0;
-                        var extraPoint = 0;
+        var allPicksForWeek = pickRepository.getAllWithWeekNumber(weekNumber, comp);
 
-                        var relevantSelected = pick.getTeamsSelected()
-                                .stream()
-                                .filter(s -> gameNumberList.contains(s.getGameNumber()))
-                                .collect(Collectors.toList());
+        for (Pick pick : allPicksForWeek) {
+            var score = 0;
+            var extraPoint = 0;
 
-                        for (Result result : resultList) {
-                            for (Selected selected : relevantSelected) {
-                                var rgn = result.getGameNumber();
-                                var sgn = selected.getGameNumber();
+            var relevantSelected = pick.getTeamsSelected()
+                    .stream()
+                    .filter(s -> gameNumberList.contains(s.getGameNumber()))
+                    .collect(Collectors.toList());
 
-                                if (rgn.equals(sgn)) {
-                                    if (rgn.equals(2) &&
-                                            week.getMargin().equals(pick.getMargin()) &&
-                                            result.getTeam().equals(selected.getTeam())
-                                    ) {
-                                        extraPoint = extraPoint + 5;
-                                        score = score + 1;
-                                    } else if (rgn.equals(2) && result.getTeam().equals(selected.getTeam())) {
-                                        score = score + 1;
-                                    } else if (rgn.equals(1) &&
-                                            week.getFirstScorer().equals(pick.getFirstScorer()) &&
-                                            result.getTeam().equals(selected.getTeam())) {
-                                        extraPoint = extraPoint + 3;
-                                        score = score + 1;
+            for (Result result : resultList) {
+                for (Selected selected : relevantSelected) {
+                    var rgn = result.getGameNumber();
+                    var sgn = selected.getGameNumber();
 
-                                    } else if (rgn.equals(1) && week.getFirstScorer().equals(pick.getFirstScorer())) {
-                                        extraPoint = extraPoint + 3;
-                                    } else if (rgn.equals(1) && result.getTeam().equals(selected.getTeam())) {
-                                        score = score + 1;
-                                    } else if (result.getTeam().equals(selected.getTeam())) {
-                                        score = score + 1;
-                                    }
+                    if (rgn.equals(sgn)) {
+                        if (rgn.equals(2) &&
+                                week.getMargin().equals(pick.getMargin()) &&
+                                result.getTeam().equals(selected.getTeam())
+                        ) {
+                            extraPoint = extraPoint + 5;
+                            score = score + 1;
+                        } else if (rgn.equals(2) && result.getTeam().equals(selected.getTeam())) {
+                            score = score + 1;
+                        } else if (rgn.equals(1) &&
+                                week.getFirstScorer().equals(pick.getFirstScorer()) &&
+                                result.getTeam().equals(selected.getTeam())) {
+                            extraPoint = extraPoint + 3;
+                            score = score + 1;
 
-                                    break;
-                                }
-
-                            }
+                        } else if (rgn.equals(1) && week.getFirstScorer().equals(pick.getFirstScorer())) {
+                            extraPoint = extraPoint + 3;
+                        } else if (rgn.equals(1) && result.getTeam().equals(selected.getTeam())) {
+                            score = score + 1;
+                        } else if (result.getTeam().equals(selected.getTeam())) {
+                            score = score + 1;
                         }
-                        pick.setExtraPoint(pick.getExtraPoint() + extraPoint);
-                        pick.setScore(pick.getScore() + score + extraPoint);
-                        pickRepository.save(pick);
+
+                        break;
                     }
 
-                    return new BasicResponse("Results added");
+                }
+            }
+            pick.setExtraPoint(pick.getExtraPoint() + extraPoint);
+            pick.setScore(pick.getScore() + score + extraPoint);
+            pickRepository.save(pick);
+        }
 
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
+        return new BasicResponse("Results added");
     }
 
     @Override
     public List<GameDTO> getGamesToUpdateResult(Integer weekNumber, Comp comp) {
-        return weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
-                .map(deadLine -> {
-                    if (OffsetDateTime.now().isBefore(deadLine)) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Before deadLine, relax");
-                    }
-                    return gameRepository.getGamesToUpdateResult(weekNumber, comp);
-                })
+        var deadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
+
+        if (OffsetDateTime.now().isBefore(deadLine)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Before deadLine, relax");
+        }
+        return gameRepository.getGamesToUpdateResult(weekNumber, comp);
+
     }
 
     @Override
@@ -247,18 +245,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public BasicResponse addPlayersToTeam(List<AddPlayersView> addPlayersViewList, Comp comp) {
+    public BasicResponse addPlayersToTeam(AddPlayersView addPlayersView, Comp comp) {
         List<String> errorList = new ArrayList<>();
-        for (AddPlayersView addPlayersView : addPlayersViewList) {
-            teamRepository.findByNameAndComp(addPlayersView.getTeamName(), comp)
-                    .ifPresent(team -> {
-                        for (PlayerView playerView : addPlayersView.getPlayers()) {
-                            var firstName = playerView.getFirstName();
-                            var lastName = playerView.getLastName();
-                            if (playerRepository.existsByFirstNameAndLastNameAndTeamNameAndTeamComp(
-                                    firstName, lastName, team.getName(), comp
-                            )) {
-                                errorList.add(firstName + " " + lastName + " " + team.getName());
+        teamRepository.findByNameAndComp(addPlayersView.getTeamName(), comp)
+                .ifPresent(team -> {
+                    for (PlayerView playerView : addPlayersView.getPlayers()) {
+                        var firstName = playerView.getFirstName();
+                        var lastName = playerView.getLastName();
+                        if (playerRepository.existsByFirstNameAndLastNameAndTeamNameAndTeamComp(
+                                firstName, lastName, team.getName(), comp
+                        )) {
+                            errorList.add(firstName + " " + lastName + " " + team.getName());
                             } else {
                                 var player = new Player(firstName, lastName);
                                 team.addPlayer(player);
@@ -266,7 +263,7 @@ public class AdminServiceImpl implements AdminService {
                         }
                         teamRepository.save(team);
                     });
-        }
+
         if (errorList.isEmpty()) {
             return new BasicResponse("All Teams supplied have been added");
         } else {
@@ -283,7 +280,6 @@ public class AdminServiceImpl implements AdminService {
                     + comp.getComp() + " already exists. ");
 
         }
-
         var dateView = createWeekView.getDateView();
         OffsetDateTime deadLine = getDeadLine(dateView);
 
@@ -302,22 +298,21 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public OffsetDateTime changeDeadline(DateView dateView, Integer weekNumber, Comp comp) {
-        return weekRepository.findByNumber(weekNumber, comp)
-                .map(week -> {
-                    if (week.getScoreUpdated()) {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scores already updated");
-                    }
-                    var deadLine = getDeadLine(dateView);
-                    week.setDeadLine(deadLine);
-                    weekRepository.save(week);
-                    return week.getDeadLine();
-                })
+        var week = weekRepository.findByNumber(weekNumber, comp)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Week number " + weekNumber + " doesn't exist"
                 ));
-    }
 
+        if (week.getScoreUpdated()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scores already updated");
+        }
+        var deadLine = getDeadLine(dateView);
+        week.setDeadLine(deadLine);
+        weekRepository.save(week);
+        return week.getDeadLine();
+
+    }
 
     private OffsetDateTime getDeadLine(DateView dateView) {
         return OffsetDateTime.of(2020, dateView.getMonth(), dateView.getDay(), dateView.getHour(),

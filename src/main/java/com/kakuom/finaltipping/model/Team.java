@@ -12,6 +12,7 @@ public class Team {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 20)
     private String name;
 
     @Column(length = 3)

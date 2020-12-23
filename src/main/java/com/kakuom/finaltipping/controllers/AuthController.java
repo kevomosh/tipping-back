@@ -3,8 +3,9 @@ package com.kakuom.finaltipping.controllers;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.JwtResponse;
 import com.kakuom.finaltipping.services.AuthService;
-import com.kakuom.finaltipping.views.ChangePasswordView;
+import com.kakuom.finaltipping.views.CreateTokenView;
 import com.kakuom.finaltipping.views.LoginView;
+import com.kakuom.finaltipping.views.PasswordView;
 import com.kakuom.finaltipping.views.RegisterView;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,15 +38,15 @@ public class AuthController {
     }
 
     @PostMapping("createToken")
-    public BasicResponse createToken(@RequestBody ChangePasswordView view) {
+    public BasicResponse createToken(@Valid @RequestBody CreateTokenView view) {
         return authService.createPasswordToken(view.getEmail());
     }
 
     @PostMapping("changePassword/{token}")
-    public BasicResponse changePassword(@RequestBody ChangePasswordView view,
+    public BasicResponse changePassword(@Valid @RequestBody PasswordView view,
                                         @PathVariable String token) {
 
-        return authService.changePassword(view.getPassword().strip(), token);
+        return authService.changePassword(view.getNewPassword().strip(), token);
     }
 
 }

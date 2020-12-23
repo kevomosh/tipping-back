@@ -1,8 +1,17 @@
 package com.kakuom.finaltipping.views;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 public class SelectedView {
+    @NotNull
+    @Min(value = 1)
+    @Max(value = 10)
     private Integer gameNumber;
 
+    @NotBlank
     private String team;
 
 

@@ -1,6 +1,5 @@
 package com.kakuom.finaltipping.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,11 +19,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
     private UserPrincipalDetailsService userDetailsService;
-
-    @Autowired
     private JwtAuthEntryPoint unauthorizedHandler;
+
+    public SecurityConfiguration(UserPrincipalDetailsService userDetailsService, JwtAuthEntryPoint unauthorizedHandler) {
+        this.userDetailsService = userDetailsService;
+        this.unauthorizedHandler = unauthorizedHandler;
+    }
+
 
     @Bean
     public JwtAuthTokenFilter authenticationJwtTokenFilter() {
@@ -63,8 +65,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/api/auth/**").permitAll()
-                .antMatchers("/api/nrl/**").permitAll()
-                .antMatchers("/api/afl/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
@@ -72,6 +72,5 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterAt(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        //super.configure(http);
     }
 }

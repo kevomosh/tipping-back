@@ -14,7 +14,7 @@ public interface AdminService {
 
     BasicResponse createTeams(StringSetView view, Comp comp);
 
-    BasicResponse addPlayersToTeam(List<AddPlayersView> addPlayersViewList, Comp comp);
+    BasicResponse addPlayersToTeam(AddPlayersView addPlayersView, Comp comp);
 
     BasicResponse createWeek(CreateWeekView createWeekView, Comp comp);
 

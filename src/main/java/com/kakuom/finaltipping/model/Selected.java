@@ -13,6 +13,7 @@ public class Selected implements Comparable<Selected> {
 
     private Integer gameNumber;
 
+    @Column(length = 20)
     private String team;
 
     @JsonIgnore

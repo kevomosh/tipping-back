@@ -9,6 +9,7 @@ import com.kakuom.finaltipping.views.PickView;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,7 +34,7 @@ public class NrlUserController {
     }
 
     @PostMapping("createPick")
-    public ResponseEntity<BasicResponse> createPick(@RequestBody PickView pickView) {
+    public ResponseEntity<BasicResponse> createPick(@Valid @RequestBody PickView pickView) {
         return ResponseEntity.ok(userService.createPick(pickView, Comp.NRL));
     }
 
@@ -57,4 +58,5 @@ public class NrlUserController {
                                             @RequestParam(required = false) Set<Long> gid) {
         return userService.getResultsForWeek(Comp.NRL, userId, gid, name, page, size);
     }
+
 }

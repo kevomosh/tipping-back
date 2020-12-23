@@ -58,52 +58,53 @@ public class UserServiceImpl implements UserService {
 
         var weekNumber = pickView.getWeekNumber();
 
+
         var isBeforeDeadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
                 .map(OffsetDateTime.now()::isBefore)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         comp.getComp() + " week not yet in records"));
 
         if (isBeforeDeadLine) {
-            return userRepository.findById(pickView.getUserId())
-                    .map(user -> {
-                        pickRepository.findByWeekNumberAndUserId(weekNumber, comp, user.getId())
-                                .ifPresentOrElse(pick -> {
-                                    for (Selected initial : pick.getTeamsSelected()) {
-                                        for (SelectedView view : pickView.getSelectedViewList()) {
-                                            var number = view.getGameNumber();
-                                            var sameNumber = number.equals(initial.getGameNumber());
-                                            if (sameNumber) {
-                                                initial.setTeam(view.getTeam());
-                                            }
-                                        }
-                                    }
-                                    var firstScorer = pickView.getFirstScorer();
-                                    var margin = pickView.getMargin();
-                                    if (firstScorer != null)
-                                        pick.setFirstScorer(firstScorer);
-                                    if (margin != null)
-                                        pick.setMargin(margin);
+            var user = userRepository.findById(pickView.getUserId()).orElseThrow(() ->
+                    new ResponseStatusException(HttpStatus.BAD_REQUEST, "You dont exist in the records"));
 
-                                    pickRepository.save(pick);
-                                }, () -> {
+            pickRepository.findByWeekNumberAndUserId(weekNumber, comp, user.getId())
+                    .ifPresentOrElse(pick -> {
+                        for (Selected initial : pick.getTeamsSelected()) {
+                            for (SelectedView view : pickView.getSelectedViewList()) {
+                                var number = view.getGameNumber();
+                                var sameNumber = number.equals(initial.getGameNumber());
+                                if (sameNumber) {
+                                    initial.setTeam(view.getTeam());
+                                }
+                            }
+                        }
+                        var firstScorer = pickView.getFirstScorer();
+                        var margin = pickView.getMargin();
+                        if (firstScorer != null)
+                            pick.setFirstScorer(firstScorer);
+                        if (margin != null)
+                            pick.setMargin(margin);
+
+                        pickRepository.save(pick);
+                    }, () -> {
 
 
-                                    var newPick = new Pick(weekNumber, comp, user.getName(),
-                                            pickView.getMargin(), pickView.getFirstScorer());
+                        var newPick = new Pick(weekNumber, comp, user.getName(),
+                                pickView.getMargin(), pickView.getFirstScorer());
 
-                                    var limit = gameRepository.getLimit(weekNumber, comp);
+                        var limit = gameRepository.getLimit(weekNumber, comp);
 
-                                    pickView.getSelectedViewList().stream()
-                                            .limit(limit)
-                                            .map(selectedView -> new Selected(selectedView.getGameNumber(), selectedView.getTeam()))
-                                            .forEach(newPick::addSelected);
+                        pickView.getSelectedViewList().stream()
+                                .limit(limit)
+                                .map(selectedView -> new Selected(selectedView.getGameNumber(), selectedView.getTeam()))
+                                .forEach(newPick::addSelected);
 
-                                    user.addPick(newPick);
-                                    userRepository.save(user);
-                                });
-                        return new BasicResponse(comp.getComp() + " pick for week " + weekNumber + " created or updated");
-                    })
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "You dont exist in the records"));
+                        user.addPick(newPick);
+                        userRepository.save(user);
+                    });
+            return new BasicResponse(comp.getComp() + " pick for week " + weekNumber + " created or updated");
+
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't exist");
         }
@@ -113,6 +114,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> getPicksForWeekNumber(Long userId, Integer weekNumber, Comp comp,
                                                      Set<Long> gid, String name, int page, int size) {
+        weekNumber = Math.max(weekNumber, 1);
+        weekNumber = Math.min(weekNumber, 25);
+
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
         Map<String, Object> response = new HashMap<>();
@@ -164,6 +168,7 @@ public class UserServiceImpl implements UserService {
     public ResultsForWeek getResultsForWeek(Comp comp,
                                             Long userId, Set<Long> gid,
                                             String name, int page, int size) {
+        userId = Math.max(userId, 0);
 
         List<Long> actualUserIds = getRelevantIds(userId, gid, comp);
 
@@ -209,6 +214,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GamesForWeek getGamesForWeek(Integer weekNumber, Comp comp) {
+        weekNumber = Math.max(weekNumber, 1);
+        weekNumber = Math.min(weekNumber, 25);
+
+
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {

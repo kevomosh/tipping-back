@@ -20,10 +20,12 @@ public class Pick {
 
     private Integer score;
 
+    @Column(length = 50)
     private String name;
 
     private Integer margin;
 
+    @Column(length = 40)
     private String firstScorer;
 
     private Integer extraPoint;

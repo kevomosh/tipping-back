@@ -10,8 +10,10 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(length = 20)
     private String firstName;
 
+    @Column(length = 20)
     private String lastName;
 
     @JsonIgnore
