@@ -13,10 +13,10 @@ public class Game {
     @Column(nullable = false)
     private Integer gameNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String homeTeam;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String awayTeam;
 
     @JsonIgnore
