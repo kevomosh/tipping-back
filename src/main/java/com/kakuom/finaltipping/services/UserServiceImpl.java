@@ -55,9 +55,6 @@ public class UserServiceImpl implements UserService {
 
         var weekNumber = pickView.getWeekNumber();
 
-        if (gameRepository.getLimit(weekNumber, comp).intValue() != pickView.getSelectedViewList().size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must make pick for all games in the week");
-        }
         if (!groupRepository.isInComp(pickView.getUserId(), comp.getComp())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please join afl comp inorder to make picks");
         }
@@ -66,6 +63,11 @@ public class UserServiceImpl implements UserService {
                 .map(OffsetDateTime.now()::isBefore)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         comp.getComp() + " week not yet in records"));
+
+        if (gameRepository.getLimit(weekNumber, comp).intValue() != pickView.getSelectedViewList().size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must make pick for all games in the week");
+        }
+
 
         if (isBeforeDeadLine) {
             var user = userRepository.findById(pickView.getUserId()).orElseThrow(() ->
@@ -130,7 +132,10 @@ public class UserServiceImpl implements UserService {
             if (singlePick.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Need to make a pick");
             } else {
-                response.put("picks", singlePick);
+                var y = singlePick.stream()
+                        .peek(this::setPickIdsToNull)
+                        .collect(Collectors.toList());
+                response.put("picks", y);
                 return response;
             }
         }
@@ -139,8 +144,7 @@ public class UserServiceImpl implements UserService {
         size = Math.max(size, 5);
         size = Math.min(size, 20);
 
-        page = Math.min(0, page);
-
+        page = Math.max(page, 0);
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -153,11 +157,7 @@ public class UserServiceImpl implements UserService {
 
         var sorted = pickRepository.getPicksWithIds(pagedIds.getContent())
                 .stream()
-                .peek(s -> {
-                    if (s != null) {
-                        s.getTeamsSelected().sort(Comparator.nullsLast(Comparator.naturalOrder()));
-                    }
-                })
+                .peek(this::setPickIdsToNull)
                 .collect(Collectors.toList());
 
         response.put("firstScorer", gameInfo.getFirstScorer());
@@ -170,6 +170,15 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    private void setPickIdsToNull(Pick pick) {
+        if (pick != null) {
+            pick.getTeamsSelected().sort(Comparator.nullsLast(Comparator.naturalOrder()));
+            pick.setId(null);
+            for (Selected selected: pick.getTeamsSelected()) {
+                selected.setId(null);
+            }
+        }
+    }
 
 
     @Override
@@ -183,7 +192,7 @@ public class UserServiceImpl implements UserService {
         size = Math.max(size, 5);
         size = Math.min(size, 20);
 
-        page = Math.min(0, page);
+        page = Math.max(page, 0);
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -285,7 +294,5 @@ public class UserServiceImpl implements UserService {
 
         return info;
     }
-
-
 
 }

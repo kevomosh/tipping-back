@@ -16,8 +16,12 @@ public class PickView {
     @NotEmpty
     private List<SelectedView> selectedViewList;
 
+    @NotNull
+    @Min(0)
+    @Max(200)
     private Integer margin;
 
+    @NotBlank
     private String firstScorer;
 
     public PickView(Long userId, Integer weekNumber, List<SelectedView> selectedViewList,
