@@ -18,6 +18,6 @@ public interface AuthService {
 
     BasicResponse changePassword(String password, String token);
 
-    BasicResponse createDefaultGroup(String name);
+    BasicResponse createDefaultGroup();
 
 }

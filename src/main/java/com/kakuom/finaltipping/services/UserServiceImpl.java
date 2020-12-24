@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
                 .filter(g -> g.getGameNumber().equals(1))
                 .findFirst()
                 .ifPresent(gameDto -> {
-                    teamNames.add(gameDto.getAwayTeam());
+                    teamNames.add(gameDto.getHomeTeam());
                     teamNames.add(gameDto.getAwayTeam());
                 });
 

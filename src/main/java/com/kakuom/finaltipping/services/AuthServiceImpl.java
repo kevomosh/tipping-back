@@ -162,9 +162,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public BasicResponse createDefaultGroup(String name) {
-        var g = new Groups(name, Comp.NRL);
+    public BasicResponse createDefaultGroup() {
+        var g = new Groups("Party House", Comp.NRL);
+        var g2 = new Groups("Misc", Comp.NRL);
+        var g3 = new Groups("Misc", Comp.AFL);
+
+
         groupRepository.save(g);
+        groupRepository.save(g2);
+        groupRepository.save(g3);
 
         return new BasicResponse("Created, now disable it");
     }

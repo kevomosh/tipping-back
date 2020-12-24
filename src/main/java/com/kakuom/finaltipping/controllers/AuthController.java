@@ -51,8 +51,9 @@ public class AuthController {
 
 //    @PostMapping("createDefaultGroup")
 //    public BasicResponse createDefaultGroup(){
-//        return authService.createDefaultGroup("Party House");
-//    }
 //
+//        return authService.createDefaultGroup();
+//    }
+
 
 }
