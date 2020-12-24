@@ -9,6 +9,9 @@ public class PlayerView {
     @NotBlank
     private String lastName;
 
+    public PlayerView() {
+    }
+
     public PlayerView(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;

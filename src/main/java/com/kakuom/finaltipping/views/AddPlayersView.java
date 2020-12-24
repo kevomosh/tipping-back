@@ -11,6 +11,9 @@ public class AddPlayersView {
     @NotEmpty
     private Set<PlayerView> players;
 
+    public AddPlayersView() {
+    }
+
     public AddPlayersView(String teamName, Set<PlayerView> players) {
         this.teamName = teamName;
         this.players = players;

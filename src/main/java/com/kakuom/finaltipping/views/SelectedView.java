@@ -14,6 +14,8 @@ public class SelectedView {
     @NotBlank
     private String team;
 
+    public SelectedView() {
+    }
 
     public SelectedView(Integer gameNumber, String team) {
         this.gameNumber = gameNumber;

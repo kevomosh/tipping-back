@@ -5,13 +5,16 @@ import com.kakuom.finaltipping.dto.WeekResultDTO;
 import javax.validation.constraints.NotEmpty;
 import java.util.Set;
 
-public class ResultView {
+public class ResultView{
     private Integer margin;
 
     private String firstScorer;
 
     @NotEmpty
     private Set<WeekResultDTO> resultViewSet;
+
+    public ResultView() {
+    }
 
     public ResultView(Integer margin, String firstScorer, Set<WeekResultDTO> resultViewSet) {
         this.margin = margin;

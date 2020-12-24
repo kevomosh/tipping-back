@@ -34,6 +34,8 @@ public class DateView {
     @NotBlank
     private String offset;
 
+    public DateView() {
+    }
 
     public DateView(Integer year, Integer month, Integer day,
                     Integer hour, Integer minute, String offset) {
