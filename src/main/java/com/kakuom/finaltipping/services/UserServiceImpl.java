@@ -52,12 +52,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BasicResponse createPick(PickView pickView, Comp comp) {
-        if (!groupRepository.isInComp(pickView.getUserId(), comp.getComp())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please join afl comp inorder to make picks");
-        }
 
         var weekNumber = pickView.getWeekNumber();
 
+        if (gameRepository.getLimit(weekNumber, comp).intValue() != pickView.getSelectedViewList().size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "You must make pick for all games in the week");
+        }
+        if (!groupRepository.isInComp(pickView.getUserId(), comp.getComp())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please join afl comp inorder to make picks");
+        }
 
         var isBeforeDeadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
                 .map(OffsetDateTime.now()::isBefore)
