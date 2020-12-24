@@ -2,6 +2,7 @@ package com.kakuom.finaltipping.services;
 
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.enums.Role;
+import com.kakuom.finaltipping.model.Groups;
 import com.kakuom.finaltipping.model.PassToken;
 import com.kakuom.finaltipping.model.User;
 import com.kakuom.finaltipping.repositories.GroupRepository;
@@ -158,6 +159,14 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
 
         return new BasicResponse("Password changed successfully. You can now Log in with the new password");
+    }
+
+    @Override
+    public BasicResponse createDefaultGroup(String name) {
+        var g = new Groups(name, Comp.NRL);
+        groupRepository.save(g);
+
+        return new BasicResponse("Created, now disable it");
     }
 
     @Async
