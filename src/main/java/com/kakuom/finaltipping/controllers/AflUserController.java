@@ -17,7 +17,7 @@ import java.util.Set;
 @RequestMapping("/api/afl/user/")
 @CrossOrigin
 public class AflUserController {
-    private UserService userService;
+    private final UserService userService;
 
     public AflUserController(UserService userService) {
         this.userService = userService;
@@ -47,6 +47,7 @@ public class AflUserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Set<Long> gid
+
     ) {
         return userService.getPicksForWeekNumber(userId, weekNumber, Comp.AFL, gid, name, page, size);
 

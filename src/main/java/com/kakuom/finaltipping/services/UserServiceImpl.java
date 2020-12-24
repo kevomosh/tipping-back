@@ -117,6 +117,7 @@ public class UserServiceImpl implements UserService {
         weekNumber = Math.max(weekNumber, 1);
         weekNumber = Math.min(weekNumber, 25);
 
+
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
         Map<String, Object> response = new HashMap<>();
@@ -136,6 +137,8 @@ public class UserServiceImpl implements UserService {
         size = Math.min(size, 20);
 
         page = Math.min(0, page);
+
+
         Pageable pageable = PageRequest.of(page, size);
 
         Page<Long> pagedIds;
@@ -163,6 +166,8 @@ public class UserServiceImpl implements UserService {
 
         return response;
     }
+
+
 
     @Override
     public ResultsForWeek getResultsForWeek(Comp comp,
@@ -277,5 +282,7 @@ public class UserServiceImpl implements UserService {
 
         return info;
     }
+
+
 
 }

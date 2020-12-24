@@ -13,7 +13,7 @@ public class Player {
     @Column(length = 20)
     private String firstName;
 
-    @Column(length = 20)
+    @Column(length = 30)
     private String lastName;
 
     @JsonIgnore

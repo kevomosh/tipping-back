@@ -17,7 +17,7 @@ import java.util.Set;
 @RequestMapping("/api/nrl/user/")
 @CrossOrigin
 public class NrlUserController {
-    private UserService userService;
+    private final UserService userService;
 
     public NrlUserController(UserService userService) {
         this.userService = userService;
@@ -46,6 +46,7 @@ public class NrlUserController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Set<Long> gid
+
     ) {
         return userService.getPicksForWeekNumber(userId, weekNumber, Comp.NRL, gid, name, page, size);
     }
@@ -55,7 +56,8 @@ public class NrlUserController {
                                             @RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
                                             @RequestParam(required = false) String name,
-                                            @RequestParam(required = false) Set<Long> gid) {
+                                            @RequestParam(required = false) Set<Long> gid
+                                            ) {
         return userService.getResultsForWeek(Comp.NRL, userId, gid, name, page, size);
     }
 

@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public class CreateWeekView {
+
+
     @NotNull
     @Min(value = 1)
     @Max(value = 40)
@@ -21,7 +23,7 @@ public class CreateWeekView {
     private List<GameDTO> gamesToPlay;
 
 
-    public CreateWeekView(Integer weekNumber, DateView dateView, List<GameDTO> gamesToPlay) {
+    public CreateWeekView( Integer weekNumber, DateView dateView, List<GameDTO> gamesToPlay) {
         this.weekNumber = weekNumber;
         this.dateView = dateView;
         this.gamesToPlay = gamesToPlay;

@@ -17,7 +17,7 @@ import java.util.List;
 @CrossOrigin
 @PreAuthorize("hasRole('ADMIN')")
 public class AflAdminController {
-    private AdminService adminService;
+    private final AdminService adminService;
 
     public AflAdminController(AdminService adminService) {
         this.adminService = adminService;
