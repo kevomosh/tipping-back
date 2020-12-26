@@ -9,12 +9,15 @@ import com.kakuom.finaltipping.repositories.*;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
+import com.kakuom.finaltipping.security.UserPrincipal;
 import com.kakuom.finaltipping.views.PickView;
 import com.kakuom.finaltipping.views.SelectedView;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -53,9 +56,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public BasicResponse createPick(PickView pickView, Comp comp) {
 
-        var weekNumber = pickView.getWeekNumber();
-
-        if (!groupRepository.isInComp(pickView.getUserId(), comp.getComp())) {
+        var weekNumber = Math.max(1,pickView.getWeekNumber());
+        var userId = this.getCurrentUserId();
+        if (!groupRepository.isInComp(userId, comp.getComp())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please join afl comp inorder to make picks");
         }
 
@@ -70,10 +73,13 @@ public class UserServiceImpl implements UserService {
 
 
         if (isBeforeDeadLine) {
-            var user = userRepository.findById(pickView.getUserId()).orElseThrow(() ->
+            var user = userRepository.getById(userId).orElseThrow(() ->
                     new ResponseStatusException(HttpStatus.BAD_REQUEST, "You dont exist in the records"));
 
-            pickRepository.findByWeekNumberAndUserId(weekNumber, comp, user.getId())
+            user.getPicks()
+                    .stream()
+                    .filter(p -> p.getWeekNumber().equals(weekNumber) && p.getComp().equals(comp))
+                    .findFirst()
                     .ifPresentOrElse(pick -> {
                         for (Selected initial : pick.getTeamsSelected()) {
                             for (SelectedView view : pickView.getSelectedViewList()) {
@@ -92,9 +98,7 @@ public class UserServiceImpl implements UserService {
                             pick.setMargin(margin);
 
                         pickRepository.save(pick);
-                    }, () -> {
-
-
+                    }, ()-> {
                         var newPick = new Pick(weekNumber, comp, user.getName(),
                                 pickView.getMargin(), pickView.getFirstScorer());
 
@@ -107,21 +111,24 @@ public class UserServiceImpl implements UserService {
 
                         user.addPick(newPick);
                         userRepository.save(user);
+
                     });
+
             return new BasicResponse(comp.getComp() + " pick for week " + weekNumber + " created or updated");
 
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't exist");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline for "
+                    + comp.getComp() + " week " + weekNumber);
         }
     }
 
-
     @Override
-    public Map<String, Object> getPicksForWeekNumber(Long userId, Integer weekNumber, Comp comp,
-                                                     Set<Long> gid, String name, int page, int size) {
+    public Map<String, Object> getPicksForWeekNumber( Integer weekNumber, Comp comp,
+                                                     Set<Long> gid, String name, int page,
+                                                      int size) {
+        var userId = this.getCurrentUserId();
         weekNumber = Math.max(weekNumber, 1);
         weekNumber = Math.min(weekNumber, 25);
-
 
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
@@ -171,21 +178,18 @@ public class UserServiceImpl implements UserService {
     }
 
     private void setPickIdsToNull(Pick pick) {
-        if (pick != null) {
-            pick.getTeamsSelected().sort(Comparator.nullsLast(Comparator.naturalOrder()));
-            pick.setId(null);
-            for (Selected selected: pick.getTeamsSelected()) {
-                selected.setId(null);
-            }
+        pick.setId(null);
+        for (Selected selected: pick.getTeamsSelected()) {
+            selected.setId(null);
         }
-    }
 
+    }
 
     @Override
     public ResultsForWeek getResultsForWeek(Comp comp,
-                                            Long userId, Set<Long> gid,
-                                            String name, int page, int size) {
-        userId = Math.max(userId, 0);
+                                             Set<Long> gid,
+                                            String name, int page, int size, String[] sort) {
+      var   userId = getCurrentUserId();
 
         List<Long> actualUserIds = getRelevantIds(userId, gid, comp);
 
@@ -194,7 +198,7 @@ public class UserServiceImpl implements UserService {
 
         page = Math.max(page, 0);
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(createSortOrder(sort, comp.getComp())));
 
         Page<ResultDTO> pagedResults;
 
@@ -211,8 +215,9 @@ public class UserServiceImpl implements UserService {
                 pagedResults = userRepository.findAflResults(actualUserIds, pageable);
             }
         }
+        var latestWeek = weekRepository.getLatestWeekNumber(comp.getComp());
 
-        return new ResultsForWeek(pagedResults.getTotalElements(), pagedResults.getContent());
+        return new ResultsForWeek(pagedResults.getTotalElements(), pagedResults.getContent(), latestWeek);
     }
 
     private List<Long> getRelevantIds(Long userId, Set<Long> gid, Comp comp) {
@@ -246,6 +251,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GamesForWeek getLatestGames(Comp comp) {
+
         var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
@@ -274,6 +280,10 @@ public class UserServiceImpl implements UserService {
                 gameInfo.getFwp(), games, playerRepository.getPlayersByTeamName(teamNames, comp));
     }
 
+    private Long getCurrentUserId() {
+        var user = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+         return user.getId();
+    }
 
     private List<WeekInfoDTO> getWeekInfo(Integer weekNumber, Integer nextWeekNumber, String comp) {
         var em = entityManagerFactory.createEntityManager();
@@ -293,6 +303,40 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exists");
 
         return info;
+    }
+
+    private List<Sort.Order> createSortOrder(String[] sort, String comp) {
+        List<Sort.Order> orders = new ArrayList<>();
+        List<String> keyWords = List.of("ts", "ls");
+        if(sort[0].contains(",")) {
+            for (String sortOrder: sort) {
+                String[] _sort = sortOrder.split(",");
+                if (_sort[0].equals(keyWords.get(1))) {
+                    _sort[0] = comp + "LastScore";
+                } else {
+                    _sort[0] = comp + "TotalScore";
+                }
+                orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
+            }
+        } else {
+            if (sort[0].equals(keyWords.get(1))) {
+                sort[0] = comp + "LastScore";
+            } else {
+                sort[0] = comp + "TotalScore";
+            }
+            orders.add(new Sort.Order(getSortDirection(sort[1]), sort[0]));
+        }
+        return orders;
+    }
+
+    private Sort.Direction getSortDirection(String direction) {
+        if (direction.equals("asc")) {
+            return Sort.Direction.ASC;
+        } else if (direction.equals("desc")) {
+            return Sort.Direction.DESC;
+        }
+
+        return Sort.Direction.ASC;
     }
 
 }

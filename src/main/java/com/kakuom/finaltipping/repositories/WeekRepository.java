@@ -16,7 +16,8 @@ import java.util.Optional;
 @Transactional
 public interface WeekRepository extends JpaRepository<Week, Long> {
 
-    @Query(value = "SELECT w FROM Week w WHERE w.number = :weekNumber AND w.comp = :comp")
+    @Query(value = "SELECT w FROM Week w  " +
+            "JOIN FETCH w.games WHERE w.number = :weekNumber AND w.comp = :comp")
     Optional<Week> findByNumber(@Param("weekNumber") Integer weekNumber,
                                 @Param("comp") Comp comp);
 

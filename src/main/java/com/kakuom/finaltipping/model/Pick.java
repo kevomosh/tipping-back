@@ -35,6 +35,7 @@ public class Pick {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderBy("gameNumber ASC")
     private List<Selected> teamsSelected = new ArrayList<>();
 
     @JsonIgnore

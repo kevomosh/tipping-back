@@ -4,14 +4,21 @@ import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
+import com.kakuom.finaltipping.security.UserPrincipal;
 import com.kakuom.finaltipping.services.UserService;
 import com.kakuom.finaltipping.views.PickView;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/nrl/user/")
@@ -38,27 +45,27 @@ public class NrlUserController {
         return ResponseEntity.ok(userService.createPick(pickView, Comp.NRL));
     }
 
-    @GetMapping("getPicks/{userId}/{weekNumber}")
+    @GetMapping("getPicks/{weekNumber}")
     public Map<String, Object> getPicks(
-            @PathVariable("userId") Long userId,
             @PathVariable("weekNumber") Integer weekNumber,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Set<Long> gid
-
     ) {
-        return userService.getPicksForWeekNumber(userId, weekNumber, Comp.NRL, gid, name, page, size);
+        return userService.getPicksForWeekNumber(weekNumber, Comp.NRL, gid, name, page, size);
     }
 
-    @GetMapping("getResultsForWeek/{userId}")
-    public ResultsForWeek getResultsForWeek(@PathVariable Long userId,
-                                            @RequestParam(defaultValue = "0") int page,
+    @GetMapping("getResultsForWeek")
+    public ResultsForWeek getResultsForWeek(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
                                             @RequestParam(required = false) String name,
-                                            @RequestParam(required = false) Set<Long> gid
+                                            @RequestParam(required = false) Set<Long> gid,
+                                            @RequestParam(defaultValue = "ts,desc") String[] sort
                                             ) {
-        return userService.getResultsForWeek(Comp.NRL, userId, gid, name, page, size);
+        return userService.getResultsForWeek(Comp.NRL, gid, name, page, size, sort);
     }
+
+
 
 }

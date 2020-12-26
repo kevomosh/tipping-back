@@ -7,10 +7,12 @@ import java.util.List;
 public class ResultsForWeek {
     private Long total;
     private List<ResultDTO> results;
+    private Long latestWeekNumber;
 
-    public ResultsForWeek(Long total, List<ResultDTO> results) {
+    public ResultsForWeek(Long total, List<ResultDTO> results, Long latestWeekNumber) {
         this.total = total;
         this.results = results;
+        this.latestWeekNumber = latestWeekNumber;
     }
 
     public Long getTotal() {
@@ -27,5 +29,13 @@ public class ResultsForWeek {
 
     public void setResults(List<ResultDTO> results) {
         this.results = results;
+    }
+
+    public Long getLatestWeekNumber() {
+        return latestWeekNumber;
+    }
+
+    public void setLatestWeekNumber(Long latestWeekNumber) {
+        this.latestWeekNumber = latestWeekNumber;
     }
 }

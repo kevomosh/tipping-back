@@ -20,11 +20,11 @@ public interface AdminService {
 
     OffsetDateTime changeDeadline(DateView dateView, Integer weekNumber, Comp comp);
 
-    BasicResponse addResults(Integer weekNumber, ResultView resultView, Comp comp);
+    BasicResponse addResults(ResultView resultView, Comp comp);
 
-    List<GameDTO> getGamesToUpdateResult(Integer weekNumber, Comp comp);
+    List<GameDTO> getGamesToUpdateResult(Comp comp);
 
-    BasicResponse updateTotalScore(Integer weekNumber, Comp comp);
+    BasicResponse updateTotalScore(Comp comp);
 
     List<String> getAllTeamsByComp(Comp comp);
 

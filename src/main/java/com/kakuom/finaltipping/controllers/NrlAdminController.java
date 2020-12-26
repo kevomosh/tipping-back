@@ -54,22 +54,19 @@ public class NrlAdminController {
         return adminService.changeDeadline(dateView, weekNumber, Comp.NRL);
     }
 
-    @PostMapping("addResults/{weekNumber}")
-    public BasicResponse addResults(@PathVariable Integer weekNumber,
-                                    @Valid @RequestBody ResultView resultView) {
-        return adminService.addResults(weekNumber, resultView, Comp.NRL);
+    @PostMapping("addResults")
+    public BasicResponse addResults(@Valid @RequestBody ResultView resultView) {
+        return adminService.addResults(resultView, Comp.NRL);
     }
 
-    @GetMapping("gamesToUpdate/{weekNumber}")
-    public List<GameDTO> getGamesToUpdate(
-            @PathVariable Integer weekNumber
-    ) {
-        return adminService.getGamesToUpdateResult(weekNumber, Comp.NRL);
+    @GetMapping("gamesToUpdate")
+    public List<GameDTO> getGamesToUpdate() {
+        return adminService.getGamesToUpdateResult(Comp.NRL);
     }
 
-    @PutMapping("updateTotalScore/{weekNumber}")
-    public BasicResponse updateTotalScore(@PathVariable Integer weekNumber) {
-        return adminService.updateTotalScore(weekNumber, Comp.NRL);
+    @PutMapping("updateTotalScore")
+    public BasicResponse updateTotalScore() {
+        return adminService.updateTotalScore(Comp.NRL);
     }
 
     @GetMapping("getAllTeams")

@@ -39,27 +39,25 @@ public class AflUserController {
         return ResponseEntity.ok(userService.createPick(pickView, Comp.AFL));
     }
 
-    @GetMapping("getPicks/{userId}/{weekNumber}")
+    @GetMapping("getPicks/{weekNumber}")
     public Map<String, Object> getPicks(
-            @PathVariable("userId") Long userId,
             @PathVariable("weekNumber") Integer weekNumber,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Set<Long> gid
-
     ) {
-        return userService.getPicksForWeekNumber(userId, weekNumber, Comp.AFL, gid, name, page, size);
+        return userService.getPicksForWeekNumber( weekNumber, Comp.AFL, gid, name, page, size);
 
     }
-
-    @GetMapping("getResultsForWeek/{userId}")
-    public ResultsForWeek getResultsForWeek(@PathVariable Long userId,
-                                            @RequestParam(defaultValue = "0") int page,
+    @GetMapping("getResultsForWeek")
+    public ResultsForWeek getResultsForWeek(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
                                             @RequestParam(required = false) String name,
-                                            @RequestParam(required = false) Set<Long> gid) {
-        return userService.getResultsForWeek(Comp.AFL, userId, gid, name, page, size);
+                                            @RequestParam(required = false) Set<Long> gid,
+                                            @RequestParam(defaultValue = "ts,desc") String[] sort
+    ) {
+        return userService.getResultsForWeek(Comp.AFL, gid, name, page, size, sort);
     }
 
 }

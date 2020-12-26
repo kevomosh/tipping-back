@@ -29,6 +29,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
 
+    @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.passToken LEFT JOIN FETCH u.picks p LEFT JOIN FETCH p.teamsSelected  WHERE u.id = :userId")
+    Optional<User> getById(@Param("userId") Long userId);
+
+
     @Query(value = "SELECT new com.kakuom.finaltipping.dto.AuthDTO " +
             "(u.id, u.name, u.email, u.password, u.role) FROM User u WHERE u.email = :userEmail ")
     Optional<AuthDTO> loadByEmail(@Param("userEmail") String userEmail);
@@ -40,7 +44,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT EXISTS(SELECT 1 FROM users u WHERE u.email = :email)", nativeQuery = true)
     Boolean existsByEmail(@Param("email") String email);
 
-    @Query(value = nrlResult + order)
+    @Query(value = nrlResult )
     Page<ResultDTO> findNrlResults(@Param("idList") List<Long> idList, Pageable pageable);
 
     @Query(value = aflResult + order)

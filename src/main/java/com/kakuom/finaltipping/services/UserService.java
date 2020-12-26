@@ -6,6 +6,7 @@ import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
 import com.kakuom.finaltipping.views.PickView;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,14 +17,14 @@ public interface UserService {
 
     BasicResponse createPick(PickView pickView, Comp comp);
 
-    Map<String, Object> getPicksForWeekNumber(Long userId, Integer weekNumber,
+    Map<String, Object> getPicksForWeekNumber( Integer weekNumber,
                                               Comp comp, Set<Long> gid,
                                               String name,
                                               int page, int size);
 
     ResultsForWeek getResultsForWeek(Comp comp,
-                                     Long userId, Set<Long> gid,
+                                      Set<Long> gid,
                                      String name,
-                                     int page, int size);
+                                     int page, int size, String[] sort);
 
 }

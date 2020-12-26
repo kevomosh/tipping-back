@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.persistence.*;
 
 @Entity
-public class Selected implements Comparable<Selected> {
+public class Selected {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -81,8 +81,4 @@ public class Selected implements Comparable<Selected> {
         return result;
     }
 
-    @Override
-    public int compareTo(@NotNull Selected o) {
-        return Integer.compare(this.getGameNumber(), o.getGameNumber());
-    }
 }

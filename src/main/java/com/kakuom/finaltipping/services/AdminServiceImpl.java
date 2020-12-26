@@ -45,7 +45,8 @@ public class AdminServiceImpl implements AdminService {
 
 
     @Override
-    public BasicResponse addResults(Integer weekNumber, ResultView resultView, Comp comp) {
+    public BasicResponse addResults( ResultView resultView, Comp comp) {
+        var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var week = weekRepository.findByNumber(weekNumber, comp).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
 
@@ -110,7 +111,7 @@ public class AdminServiceImpl implements AdminService {
                                 week.getMargin().equals(pick.getMargin()) &&
                                 result.getTeam().equals(selected.getTeam())
                         ) {
-                            extraPoint = extraPoint + 5;
+                            extraPoint = extraPoint + 10;
                             score = score + 1;
                         } else if (rgn.equals(2) && result.getTeam().equals(selected.getTeam())) {
                             score = score + 1;
@@ -142,7 +143,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<GameDTO> getGamesToUpdateResult(Integer weekNumber, Comp comp) {
+    public List<GameDTO> getGamesToUpdateResult(Comp comp) {
+        var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var deadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
 
@@ -154,7 +156,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public BasicResponse updateTotalScore(Integer weekNumber, Comp comp) {
+    public BasicResponse updateTotalScore(Comp comp) {
+        var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var updated = weekRepository.checkScoreUpdated(weekNumber, comp);
         if (updated == null || updated) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesnt exist or total score already updated");

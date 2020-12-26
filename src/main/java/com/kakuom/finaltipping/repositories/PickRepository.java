@@ -21,21 +21,23 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
             "LEFT JOIN FETCH p.teamsSelected ts WHERE p.weekNumber = :weekNumber " +
             "AND p.comp = :comp AND  p.user.id ";
 
-    @Query(value = pickIdsQuery)
+    String order = " ORDER BY p.score DESC";
+
+    @Query(value = pickIdsQuery + order)
     Page<Long> getPickIds(@Param("weekNumber") Integer weekNumber,
                           @Param("comp") Comp comp,
                           @Param("sameGroupUsersId") List<Long> sameGroupUsersId,
                           Pageable pageable);
 
-    @Query(value = pickIdsQuery + "AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) ")
+    @Query(value = pickIdsQuery + "AND LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%')) " + order)
     Page<Long> getPickIdsWithName(@Param("weekNumber") Integer weekNumber,
                                   @Param("comp") Comp comp,
                                   @Param("sameGroupUsersId") List<Long> sameGroupUsersId,
                                   @Param("name") String name,
                                   Pageable pageable);
 
-    @Query(value = "SELECT DISTINCT p FROM Pick p " +
-            "LEFT JOIN FETCH p.teamsSelected ts WHERE p.id IN (:pickIds) ORDER BY p.score DESC")
+    @Query(value = "SELECT  p FROM Pick p " +
+            "LEFT JOIN FETCH p.teamsSelected ts WHERE p.id IN (:pickIds) ORDER BY p.score DESC ")
     List<Pick> getPicksWithIds(@Param("pickIds") List<Long> pickIds);
 
     @Query(value = mainQuery + "= :userId")
