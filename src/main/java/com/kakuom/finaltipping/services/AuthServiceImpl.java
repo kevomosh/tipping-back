@@ -104,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
         var nrlGroups = groupRepository.getGroupsForUser(userDetails.getId(), Comp.NRL);
         var aflGroups = groupRepository.getGroupsForUser(userDetails.getId(), Comp.AFL);
 
-        return new JwtResponse(jwt, userDetails.getUsername(), userDetails.getId(), nrlGroups, aflGroups);
+        return new JwtResponse(jwt, userDetails.getUsername(), nrlGroups, aflGroups);
 
     }
 

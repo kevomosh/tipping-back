@@ -7,14 +7,12 @@ import java.util.List;
 public class JwtResponse {
     private String token;
     private String username;
-    private Long id;
     private List<GroupDTO> nrlGroups;
     private List<GroupDTO> aflGroups;
 
-    public JwtResponse(String token, String username, Long id, List<GroupDTO> nrlGroups, List<GroupDTO> aflGroups) {
+    public JwtResponse(String token, String username, List<GroupDTO> nrlGroups, List<GroupDTO> aflGroups) {
         this.token = token;
         this.username = username;
-        this.id = id;
         this.nrlGroups = nrlGroups;
         this.aflGroups = aflGroups;
     }
@@ -51,11 +49,5 @@ public class JwtResponse {
         this.aflGroups = aflGroups;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 }

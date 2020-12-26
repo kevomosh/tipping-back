@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface PickRepository extends JpaRepository<Pick, Long> {
-    String pickIdsQuery = "SELECT p.id FROM Pick p WHERE " +
+    String pickIdsQuery = "SELECT  p.id FROM Pick p WHERE " +
             "p.weekNumber = :weekNumber AND p.comp = :comp AND  p.user.id IN (:sameGroupUsersId) ";
 
     String mainQuery = "SELECT DISTINCT p FROM Pick p " +
@@ -36,7 +36,7 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
                                   @Param("name") String name,
                                   Pageable pageable);
 
-    @Query(value = "SELECT  p FROM Pick p " +
+    @Query(value = "SELECT DISTINCT  p FROM Pick p " +
             "LEFT JOIN FETCH p.teamsSelected ts WHERE p.id IN (:pickIds) ORDER BY p.score DESC ")
     List<Pick> getPicksWithIds(@Param("pickIds") List<Long> pickIds);
 
