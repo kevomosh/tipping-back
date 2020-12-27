@@ -3,10 +3,9 @@ package com.kakuom.finaltipping.services;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
+import com.kakuom.finaltipping.responses.PicksForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
 import com.kakuom.finaltipping.views.PickView;
-
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,10 +16,10 @@ public interface UserService {
 
     BasicResponse createPick(PickView pickView, Comp comp);
 
-    Map<String, Object> getPicksForWeekNumber( Integer weekNumber,
-                                              Comp comp, Set<Long> gid,
-                                              String name,
-                                              int page, int size);
+    PicksForWeek getPicksForWeekNumber(Integer weekNumber,
+                                       Comp comp, Set<Long> gid,
+                                       String name,
+                                       int page, int size);
 
     ResultsForWeek getResultsForWeek(Comp comp,
                                       Set<Long> gid,

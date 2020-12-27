@@ -3,6 +3,7 @@ package com.kakuom.finaltipping.controllers;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
+import com.kakuom.finaltipping.responses.PicksForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
 import com.kakuom.finaltipping.services.UserService;
 import com.kakuom.finaltipping.views.PickView;
@@ -40,7 +41,7 @@ public class AflUserController {
     }
 
     @GetMapping("getPicks/{weekNumber}")
-    public Map<String, Object> getPicks(
+    public PicksForWeek getPicks(
             @PathVariable("weekNumber") Integer weekNumber,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

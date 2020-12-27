@@ -8,6 +8,7 @@ import com.kakuom.finaltipping.model.Selected;
 import com.kakuom.finaltipping.repositories.*;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
+import com.kakuom.finaltipping.responses.PicksForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
 import com.kakuom.finaltipping.security.UserPrincipal;
 import com.kakuom.finaltipping.views.PickView;
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService {
         var weekNumber = Math.max(1,pickView.getWeekNumber());
         var userId = this.getCurrentUserId();
         if (!groupRepository.isInComp(userId, comp.getComp())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please join afl comp inorder to make picks");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please join relevant comp inorder to make picks");
         }
 
         var isBeforeDeadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
@@ -118,21 +119,20 @@ public class UserServiceImpl implements UserService {
 
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline for "
-                    + comp.getComp() + " week " + weekNumber);
+                    + comp.getComp() + " week " + weekNumber + "No more picks being taken ");
         }
     }
 
     @Override
-    public Map<String, Object> getPicksForWeekNumber( Integer weekNumber, Comp comp,
-                                                     Set<Long> gid, String name, int page,
-                                                      int size) {
+    public PicksForWeek getPicksForWeekNumber(Integer weekNumber, Comp comp,
+                                              Set<Long> gid, String name, int page,
+                                              int size) {
         var userId = this.getCurrentUserId();
         weekNumber = Math.max(weekNumber, 1);
         weekNumber = Math.min(weekNumber, 25);
 
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
-        Map<String, Object> response = new HashMap<>();
 
         if (OffsetDateTime.now().isBefore(gameInfo.getDeadLine())) {
             var singlePick = pickRepository.getPickBeforeDeadLine(weekNumber, comp, userId);
@@ -142,8 +142,7 @@ public class UserServiceImpl implements UserService {
                 var y = singlePick.stream()
                         .peek(this::setPickIdsToNull)
                         .collect(Collectors.toList());
-                response.put("picks", y);
-                return response;
+                return new PicksForWeek(y);
             }
         }
 
@@ -167,14 +166,11 @@ public class UserServiceImpl implements UserService {
                 .peek(this::setPickIdsToNull)
                 .collect(Collectors.toList());
 
-        response.put("firstScorer", gameInfo.getFirstScorer());
-        response.put("margin", gameInfo.getMargin());
-        response.put("fwp", gameInfo.getFwp());
-        response.put("picks", sorted);
-        response.put("total", pagedIds.getTotalElements());
-        response.put("winners", resultRepository.findAllByWeekAndComp(weekNumber, comp));
+        return new PicksForWeek(pagedIds.getTotalElements(),gameInfo.getFwp()
+                ,gameInfo.getFirstScorer(), gameInfo.getMargin(), sorted,
+                resultRepository.findAllByWeekAndComp(weekNumber, comp));
 
-        return response;
+
     }
 
     private void setPickIdsToNull(Pick pick) {
@@ -242,6 +238,7 @@ public class UserServiceImpl implements UserService {
 
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
+
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline. Click " +
                     "on latest week button ");
@@ -258,7 +255,7 @@ public class UserServiceImpl implements UserService {
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
             var nextWeekNumber = weekNumber + 1;
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past deadline for latest week. " +
-                    "Though you can make picks for next week " + nextWeekNumber);
+                    "Though you can make picks for the following week which is week number  " + nextWeekNumber);
         }
         return getActualGamesForWeek(weekNumber, comp, gameInfo);
     }
@@ -309,14 +306,15 @@ public class UserServiceImpl implements UserService {
         List<Sort.Order> orders = new ArrayList<>();
         List<String> keyWords = List.of("ts", "ls");
         if(sort[0].contains(",")) {
-            for (String sortOrder: sort) {
-                String[] _sort = sortOrder.split(",");
+            for (int i = 0; i < 2; i++) {
+                String[] _sort = sort[i].split(",");
                 if (_sort[0].equals(keyWords.get(1))) {
                     _sort[0] = comp + "LastScore";
                 } else {
                     _sort[0] = comp + "TotalScore";
                 }
                 orders.add(new Sort.Order(getSortDirection(_sort[1]), _sort[0]));
+
             }
         } else {
             if (sort[0].equals(keyWords.get(1))) {
