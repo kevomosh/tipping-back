@@ -8,6 +8,7 @@ import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.views.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
@@ -214,7 +215,7 @@ public class AdminServiceImpl implements AdminService {
             if (groupRepository.existsByNameAndComp(groupName, comp.getComp())) {
                 errorList.add(groupName);
             } else {
-                var newGroup = new Groups(groupName, comp);
+                var newGroup = new Groups(StringUtils.capitalize(groupName), comp);
                 groupRepository.save(newGroup);
             }
         }
@@ -235,7 +236,7 @@ public class AdminServiceImpl implements AdminService {
             if (teamRepository.existsByNameAndComp(teamName, comp.getComp())) {
                 errorList.add(teamName);
             } else {
-                var newTeam = new Team(teamName, comp);
+                var newTeam = new Team(StringUtils.capitalize(teamName), comp);
                 teamRepository.save(newTeam);
             }
         }
@@ -260,7 +261,8 @@ public class AdminServiceImpl implements AdminService {
                         )) {
                             errorList.add(firstName + " " + lastName + " " + team.getName());
                             } else {
-                                var player = new Player(firstName, lastName);
+                                var player = new Player(StringUtils.capitalize(firstName)
+                                        ,StringUtils.capitalize(lastName));
                                 team.addPlayer(player);
                             }
                         }

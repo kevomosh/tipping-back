@@ -123,6 +123,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //TODO fwp showing false when i choose picks for week onw
     @Override
     public PicksForWeek getPicksForWeekNumber(Integer weekNumber, Comp comp,
                                               Set<Long> gid, String name, int page,
@@ -189,7 +190,7 @@ public class UserServiceImpl implements UserService {
 
         List<Long> actualUserIds = getRelevantIds(userId, gid, comp);
 
-        size = Math.max(size, 5);
+        size = Math.max(size, 1);
         size = Math.min(size, 20);
 
         page = Math.max(page, 0);
@@ -212,8 +213,9 @@ public class UserServiceImpl implements UserService {
             }
         }
         var latestWeek = weekRepository.getLatestWeekNumber(comp.getComp());
-
-        return new ResultsForWeek(pagedResults.getTotalElements(), pagedResults.getContent(), latestWeek);
+        var t = pagedResults.getSize();
+        return new ResultsForWeek(pagedResults.getTotalElements(),pagedResults.getNumber(),
+                pagedResults.getSize(),pagedResults.getContent(), latestWeek);
     }
 
     private List<Long> getRelevantIds(Long userId, Set<Long> gid, Comp comp) {

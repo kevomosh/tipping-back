@@ -10,6 +10,7 @@ import com.kakuom.finaltipping.services.UserService;
 import com.kakuom.finaltipping.views.PickView;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,6 +66,11 @@ public class NrlUserController {
                                             @RequestParam(defaultValue = "ts,desc") String[] sort
                                             ) {
         return userService.getResultsForWeek(Comp.NRL, gid, name, page, size, sort);
+    }
+
+    @GetMapping("test/{f}/{l}")
+    public Object x(@PathVariable String f, @PathVariable String l){
+        return StringUtils.capitalize(f) + StringUtils.capitalize(l);
     }
 
 

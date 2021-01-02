@@ -15,7 +15,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(length = 50)
+    @Column(length = 20)
     private String name;
 
     @NaturalId

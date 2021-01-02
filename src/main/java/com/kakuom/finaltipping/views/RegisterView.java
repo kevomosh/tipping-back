@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class RegisterView {
     @NotBlank(message = "Name is required")
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 20)
     private String name;
 
     @NotBlank(message = "email is required")

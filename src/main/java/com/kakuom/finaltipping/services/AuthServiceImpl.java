@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
@@ -70,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
 
         }
 
-        User newUser = new User(registerView.getName(), registerView.getEmail(),
+        User newUser = new User(StringUtils.capitalize(registerView.getName()), registerView.getEmail(),
                 encoder.encode(registerView.getPassword()), Role.USER);
 
 

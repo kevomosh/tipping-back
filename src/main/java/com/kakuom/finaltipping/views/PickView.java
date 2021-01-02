@@ -20,6 +20,7 @@ public class PickView {
 
     @NotBlank
     private String firstScorer;
+    //TODO check if you can remove not null for furstScorer and margin
 
     public PickView( Integer weekNumber, List<SelectedView> selectedViewList,
                     Integer margin, String firstScorer) {
