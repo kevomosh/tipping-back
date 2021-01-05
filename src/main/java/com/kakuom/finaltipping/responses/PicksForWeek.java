@@ -1,5 +1,6 @@
 package com.kakuom.finaltipping.responses;
 
+import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.dto.WeekResultDTO;
 import com.kakuom.finaltipping.model.Pick;
 
@@ -12,20 +13,23 @@ public class PicksForWeek {
     private Integer margin;
     private List<Pick> picks;
     private List<WeekResultDTO> winners;
+    private List<GameDTO> gamesForWeek;
 
-    public PicksForWeek(List<Pick> picks) {
+    public PicksForWeek(List<Pick> picks, List<GameDTO> gamesForWeek) {
         this.picks = picks;
+        this.gamesForWeek = gamesForWeek;
     }
 
     public PicksForWeek(Long total, Boolean fwp,
                         String firstScorer, Integer margin,
-                        List<Pick> picks, List<WeekResultDTO> winners) {
+                        List<Pick> picks, List<WeekResultDTO> winners, List<GameDTO> gamesForWeek) {
         this.total = total;
         this.fwp = fwp;
         this.firstScorer = firstScorer;
         this.margin = margin;
         this.picks = picks;
         this.winners = winners;
+        this.gamesForWeek = gamesForWeek;
     }
 
     public Long getTotal() {
@@ -74,5 +78,13 @@ public class PicksForWeek {
 
     public void setWinners(List<WeekResultDTO> winners) {
         this.winners = winners;
+    }
+
+    public List<GameDTO> getGamesForWeek() {
+        return gamesForWeek;
+    }
+
+    public void setGamesForWeek(List<GameDTO> gamesForWeek) {
+        this.gamesForWeek = gamesForWeek;
     }
 }

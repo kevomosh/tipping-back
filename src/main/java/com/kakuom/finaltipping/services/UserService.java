@@ -21,6 +21,10 @@ public interface UserService {
                                        String name,
                                        int page, int size);
 
+    PicksForWeek getPicksForLatestWeek(Comp comp, Set<Long> gid,
+                                       String name,
+                                       int page, int size);
+
     ResultsForWeek getResultsForWeek(Comp comp,
                                       Set<Long> gid,
                                      String name,

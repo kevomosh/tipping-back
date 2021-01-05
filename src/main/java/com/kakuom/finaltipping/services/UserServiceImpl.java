@@ -13,6 +13,7 @@ import com.kakuom.finaltipping.responses.ResultsForWeek;
 import com.kakuom.finaltipping.security.UserPrincipal;
 import com.kakuom.finaltipping.views.PickView;
 import com.kakuom.finaltipping.views.SelectedView;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -128,10 +129,21 @@ public class UserServiceImpl implements UserService {
     public PicksForWeek getPicksForWeekNumber(Integer weekNumber, Comp comp,
                                               Set<Long> gid, String name, int page,
                                               int size) {
-        var userId = this.getCurrentUserId();
         weekNumber = Math.max(weekNumber, 1);
         weekNumber = Math.min(weekNumber, 25);
 
+        return getPicksForWeek(weekNumber, comp, gid, name, page, size);
+    }
+
+    @Override
+    public PicksForWeek getPicksForLatestWeek(Comp comp, Set<Long> gid, String name, int page, int size) {
+        var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
+        return getPicksForWeek(weekNumber, comp, gid, name, page, size);
+    }
+
+    @NotNull
+    private PicksForWeek getPicksForWeek(Integer weekNumber, Comp comp, Set<Long> gid, String name, int page, int size) {
+        var userId = this.getCurrentUserId();
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
 
@@ -143,7 +155,7 @@ public class UserServiceImpl implements UserService {
                 var y = singlePick.stream()
                         .peek(this::setPickIdsToNull)
                         .collect(Collectors.toList());
-                return new PicksForWeek(y);
+                return new PicksForWeek(y, gameRepository.getGamesForWeek(weekNumber, comp));
             }
         }
 
@@ -169,10 +181,10 @@ public class UserServiceImpl implements UserService {
 
         return new PicksForWeek(pagedIds.getTotalElements(),gameInfo.getFwp()
                 ,gameInfo.getFirstScorer(), gameInfo.getMargin(), sorted,
-                resultRepository.findAllByWeekAndComp(weekNumber, comp));
-
-
+                resultRepository.findAllByWeekAndComp(weekNumber, comp), gameRepository.getGamesForWeek(weekNumber, comp));
     }
+
+
 
     private void setPickIdsToNull(Pick pick) {
         pick.setId(null);

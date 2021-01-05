@@ -58,6 +58,14 @@ public class NrlUserController {
         return userService.getPicksForWeekNumber(weekNumber, Comp.NRL, gid, name, page, size);
     }
 
+    @GetMapping("getPicks")
+    public PicksForWeek getLatestPicks(@RequestParam(defaultValue = "0") int page,
+                                       @RequestParam(defaultValue = "10") int size,
+                                       @RequestParam(required = false) String name,
+                                       @RequestParam(required = false) Set<Long> gid) {
+        return userService.getPicksForLatestWeek(Comp.NRL, gid, name, page, size);
+    }
+
     @GetMapping("getResultsForWeek")
     public ResultsForWeek getResultsForWeek(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int size,
@@ -68,10 +76,7 @@ public class NrlUserController {
         return userService.getResultsForWeek(Comp.NRL, gid, name, page, size, sort);
     }
 
-    @GetMapping("test/{f}/{l}")
-    public Object x(@PathVariable String f, @PathVariable String l){
-        return StringUtils.capitalize(f) + StringUtils.capitalize(l);
-    }
+
 
 
 
