@@ -8,6 +8,7 @@ import java.util.List;
 
 public class PicksForWeek {
     private Long total;
+    private Integer pageNumber;
     private Boolean fwp;
     private String firstScorer;
     private Integer margin;
@@ -18,12 +19,14 @@ public class PicksForWeek {
     public PicksForWeek(List<Pick> picks, List<GameDTO> gamesForWeek) {
         this.picks = picks;
         this.gamesForWeek = gamesForWeek;
+        this.pageNumber = 0;
     }
 
-    public PicksForWeek(Long total, Boolean fwp,
+    public PicksForWeek(Long total, Integer pageNumber ,Boolean fwp,
                         String firstScorer, Integer margin,
                         List<Pick> picks, List<WeekResultDTO> winners, List<GameDTO> gamesForWeek) {
         this.total = total;
+        this.pageNumber = pageNumber;
         this.fwp = fwp;
         this.firstScorer = firstScorer;
         this.margin = margin;
@@ -86,5 +89,13 @@ public class PicksForWeek {
 
     public void setGamesForWeek(List<GameDTO> gamesForWeek) {
         this.gamesForWeek = gamesForWeek;
+    }
+
+    public Integer getPageNumber() {
+        return pageNumber;
+    }
+
+    public void setPageNumber(Integer pageNumber) {
+        this.pageNumber = pageNumber;
     }
 }

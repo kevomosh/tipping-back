@@ -6,10 +6,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class DateView {
-    @NotNull
-    @Min(value = 2020)
-    @Max(value = 2021)
-    private Integer year;
 
     @Min(value = 1)
     @Max(value = 12)
@@ -37,9 +33,8 @@ public class DateView {
     public DateView() {
     }
 
-    public DateView(Integer year, Integer month, Integer day,
+    public DateView( Integer month, Integer day,
                     Integer hour, Integer minute, String offset) {
-        this.year = year;
         this.month = month;
         this.day = day;
         this.hour = hour;
@@ -87,11 +82,4 @@ public class DateView {
         this.offset = offset;
     }
 
-    public Integer getYear() {
-        return year;
-    }
-
-    public void setYear(Integer year) {
-        this.year = year;
-    }
 }
