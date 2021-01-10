@@ -6,7 +6,6 @@ import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.responses.PicksForWeek;
 import com.kakuom.finaltipping.responses.ResultsForWeek;
 import com.kakuom.finaltipping.views.PickView;
-import java.util.Map;
 import java.util.Set;
 
 public interface UserService {

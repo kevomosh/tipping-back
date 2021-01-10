@@ -179,6 +179,9 @@ public class UserServiceImpl implements UserService {
                 .peek(this::setPickIdsToNull)
                 .collect(Collectors.toList());
 
+         System.out.println(size);
+        System.out.println(pagedIds.getSize());
+
         return new PicksForWeek(pagedIds.getTotalElements(), pagedIds.getNumber(),gameInfo.getFwp()
                 ,gameInfo.getFirstScorer(), gameInfo.getMargin(), sorted,
                 resultRepository.findAllByWeekAndComp(weekNumber, comp), gameRepository.getGamesForWeek(weekNumber, comp));

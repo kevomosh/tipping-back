@@ -9,6 +9,7 @@ import java.util.List;
 public class PicksForWeek {
     private Long total;
     private Integer pageNumber;
+    private Integer size;
     private Boolean fwp;
     private String firstScorer;
     private Integer margin;
