@@ -4,6 +4,7 @@ import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.dto.WeekResultDTO;
 import com.kakuom.finaltipping.model.Pick;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +17,10 @@ public class PicksForWeek {
     private List<Pick> picks;
     private List<WeekResultDTO> winners;
     private List<GameDTO> gamesForWeek;
+    private OffsetDateTime deadLine;
 
-    public PicksForWeek(List<Pick> picks, List<GameDTO> gamesForWeek, Boolean fwp) {
+    public PicksForWeek(List<Pick> picks, List<GameDTO> gamesForWeek,
+                        Boolean fwp, OffsetDateTime deadLine) {
         this.picks = picks;
         this.gamesForWeek = gamesForWeek;
         this.pageNumber = 0;
@@ -26,11 +29,13 @@ public class PicksForWeek {
         this.firstScorer = "";
         this.margin = 0;
         this.fwp = fwp;
+        this.deadLine = deadLine;
     }
 
     public PicksForWeek(Long total, Integer pageNumber ,Boolean fwp,
                         String firstScorer, Integer margin,
-                        List<Pick> picks, List<WeekResultDTO> winners, List<GameDTO> gamesForWeek) {
+                        List<Pick> picks, List<WeekResultDTO> winners,
+                        List<GameDTO> gamesForWeek, OffsetDateTime deadLine) {
         this.total = total;
         this.pageNumber = pageNumber;
         this.fwp = fwp;
@@ -39,6 +44,7 @@ public class PicksForWeek {
         this.picks = picks;
         this.winners = winners;
         this.gamesForWeek = gamesForWeek;
+        this.deadLine = deadLine;
     }
 
     public Long getTotal() {
@@ -103,5 +109,13 @@ public class PicksForWeek {
 
     public void setPageNumber(Integer pageNumber) {
         this.pageNumber = pageNumber;
+    }
+
+    public OffsetDateTime getDeadLine() {
+        return deadLine;
+    }
+
+    public void setDeadLine(OffsetDateTime deadLine) {
+        this.deadLine = deadLine;
     }
 }

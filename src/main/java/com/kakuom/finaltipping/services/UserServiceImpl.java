@@ -155,7 +155,8 @@ public class UserServiceImpl implements UserService {
                 var y = singlePick.stream()
                         .peek(this::setPickIdsToNull)
                         .collect(Collectors.toList());
-                return new PicksForWeek(y, gameRepository.getGamesForWeek(weekNumber, comp), gameInfo.getFwp());
+                return new PicksForWeek(y, gameRepository.getGamesForWeek(weekNumber, comp),
+                        gameInfo.getFwp(), gameInfo.getDeadLine());
             }
         }
 
@@ -184,10 +185,9 @@ public class UserServiceImpl implements UserService {
 
         return new PicksForWeek(pagedIds.getTotalElements(), pagedIds.getNumber(),gameInfo.getFwp()
                 ,gameInfo.getFirstScorer(), gameInfo.getMargin(), sorted,
-                resultRepository.findAllByWeekAndComp(weekNumber, comp), gameRepository.getGamesForWeek(weekNumber, comp));
+                resultRepository.findAllByWeekAndComp(weekNumber, comp),
+                gameRepository.getGamesForWeek(weekNumber, comp), gameInfo.getDeadLine());
     }
-
-
 
     private void setPickIdsToNull(Pick pick) {
         pick.setId(null);
