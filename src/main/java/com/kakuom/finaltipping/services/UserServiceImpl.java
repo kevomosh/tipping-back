@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService {
                 var y = singlePick.stream()
                         .peek(this::setPickIdsToNull)
                         .collect(Collectors.toList());
-                return new PicksForWeek(y, gameRepository.getGamesForWeek(weekNumber, comp));
+                return new PicksForWeek(y, gameRepository.getGamesForWeek(weekNumber, comp), gameInfo.getFwp());
             }
         }
 
@@ -304,7 +304,7 @@ public class UserServiceImpl implements UserService {
 
         Query r = em.createNativeQuery(
                 "select w.dead_line, w.number ," +
-                        " (select exists(select 1 where w.number = :nextWeekNumber))as nxt," +
+                        " (select exists(select 1 from week w where w.number = :nextWeekNumber))as nxt," +
                         " w.margin , w.first_scorer as fs from week w where w.number = :weekNumber and w.comp = :comp",
                 "WeekInfoDtoMapping"
         ).setParameter("weekNumber", weekNumber)
