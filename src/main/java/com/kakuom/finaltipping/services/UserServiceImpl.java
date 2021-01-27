@@ -156,7 +156,7 @@ public class UserServiceImpl implements UserService {
                         .peek(this::setPickIdsToNull)
                         .collect(Collectors.toList());
                 return new PicksForWeek(y, gameRepository.getGamesForWeek(weekNumber, comp),
-                        gameInfo.getFwp(), gameInfo.getDeadLine());
+                        gameInfo.getFwp(), gameInfo.getDeadLine(), weekNumber);
             }
         }
 
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<Long> pagedIds;
+       Page<Long> pagedIds;
         if (name != null && name.strip().length() > 1) {
             pagedIds = pickRepository.getPickIdsWithName(weekNumber, comp, sameGroupUserIds, name.strip(), pageable);
         } else {
@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
         return new PicksForWeek(pagedIds.getTotalElements(), pagedIds.getNumber(),gameInfo.getFwp()
                 ,gameInfo.getFirstScorer(), gameInfo.getMargin(), sorted,
                 resultRepository.findAllByWeekAndComp(weekNumber, comp),
-                gameRepository.getGamesForWeek(weekNumber, comp), gameInfo.getDeadLine());
+                gameRepository.getGamesForWeek(weekNumber, comp), gameInfo.getDeadLine(), weekNumber);
     }
 
     private void setPickIdsToNull(Pick pick) {
@@ -227,10 +227,10 @@ public class UserServiceImpl implements UserService {
                 pagedResults = userRepository.findAflResults(actualUserIds, pageable);
             }
         }
-        var latestWeek = weekRepository.getLatestWeekNumber(comp.getComp());
+        var latestWeekNumber = weekRepository.getLatestWeekNumber(comp.getComp());
         var t = pagedResults.getSize();
         return new ResultsForWeek(pagedResults.getTotalElements(),pagedResults.getNumber(),
-                pagedResults.getSize(),pagedResults.getContent(), latestWeek);
+                pagedResults.getSize(),pagedResults.getContent(), latestWeekNumber);
     }
 
     private List<Long> getRelevantIds(Long userId, Set<Long> gid, Comp comp) {

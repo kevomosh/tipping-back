@@ -18,9 +18,10 @@ public class PicksForWeek {
     private List<WeekResultDTO> winners;
     private List<GameDTO> gamesForWeek;
     private OffsetDateTime deadLine;
+    Integer weekNumber;
 
     public PicksForWeek(List<Pick> picks, List<GameDTO> gamesForWeek,
-                        Boolean fwp, OffsetDateTime deadLine) {
+                        Boolean fwp, OffsetDateTime deadLine, Integer weekNumber) {
         this.picks = picks;
         this.gamesForWeek = gamesForWeek;
         this.pageNumber = 0;
@@ -30,12 +31,14 @@ public class PicksForWeek {
         this.margin = 0;
         this.fwp = fwp;
         this.deadLine = deadLine;
+        this.weekNumber = weekNumber;
     }
 
     public PicksForWeek(Long total, Integer pageNumber ,Boolean fwp,
                         String firstScorer, Integer margin,
                         List<Pick> picks, List<WeekResultDTO> winners,
-                        List<GameDTO> gamesForWeek, OffsetDateTime deadLine) {
+                        List<GameDTO> gamesForWeek, OffsetDateTime deadLine,
+                        Integer weekNumber) {
         this.total = total;
         this.pageNumber = pageNumber;
         this.fwp = fwp;
@@ -45,6 +48,7 @@ public class PicksForWeek {
         this.winners = winners;
         this.gamesForWeek = gamesForWeek;
         this.deadLine = deadLine;
+        this.weekNumber = weekNumber;
     }
 
     public Long getTotal() {
@@ -117,5 +121,13 @@ public class PicksForWeek {
 
     public void setDeadLine(OffsetDateTime deadLine) {
         this.deadLine = deadLine;
+    }
+
+    public Integer getWeekNumber() {
+        return weekNumber;
+    }
+
+    public void setWeekNumber(Integer weekNumber) {
+        this.weekNumber = weekNumber;
     }
 }
