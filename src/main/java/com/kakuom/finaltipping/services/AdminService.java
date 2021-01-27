@@ -4,6 +4,7 @@ package com.kakuom.finaltipping.services;
 import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
+import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.views.*;
 
 import java.time.OffsetDateTime;
@@ -22,7 +23,7 @@ public interface AdminService {
 
     BasicResponse addResults(ResultView resultView, Comp comp);
 
-    List<GameDTO> getGamesToUpdateResult(Comp comp);
+    GamesForWeek getGamesToUpdateResult(Comp comp);
 
     BasicResponse updateTotalScore(Comp comp);
 

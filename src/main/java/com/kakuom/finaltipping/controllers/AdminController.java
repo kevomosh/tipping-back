@@ -3,6 +3,7 @@ package com.kakuom.finaltipping.controllers;
 import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
+import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.services.AdminService;
 import com.kakuom.finaltipping.views.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -65,7 +66,7 @@ public class AdminController {
     }
 
     @GetMapping("{competition}/gamesToUpdate")
-    public List<GameDTO> getGamesToUpdate(@PathVariable String competition) {
+    public GamesForWeek getGamesToUpdate(@PathVariable String competition) {
         return adminService.getGamesToUpdateResult(this.getComp(competition));
     }
 

@@ -5,6 +5,7 @@ import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.model.*;
 import com.kakuom.finaltipping.repositories.*;
 import com.kakuom.finaltipping.responses.BasicResponse;
+import com.kakuom.finaltipping.responses.GamesForWeek;
 import com.kakuom.finaltipping.views.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -140,11 +141,12 @@ public class AdminServiceImpl implements AdminService {
             pickRepository.save(pick);
         }
 
+
         return new BasicResponse("Results added");
     }
 
     @Override
-    public List<GameDTO> getGamesToUpdateResult(Comp comp) {
+    public GamesForWeek getGamesToUpdateResult(Comp comp) {
         var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var deadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
@@ -152,8 +154,21 @@ public class AdminServiceImpl implements AdminService {
         if (OffsetDateTime.now().isBefore(deadLine)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Before deadLine, relax");
         }
-        return gameRepository.getGamesToUpdateResult(weekNumber, comp);
 
+        var games = gameRepository.getGamesToUpdateResult(weekNumber, comp);
+        List<String> teamNames = new ArrayList<>();
+        games.stream()
+                .filter(g -> g.getGameNumber().equals(1))
+                .findFirst()
+                .ifPresent(gameDto -> {
+                    teamNames.add(gameDto.getHomeTeam());
+                    teamNames.add(gameDto.getAwayTeam());
+                });
+        var result = new GamesForWeek(weekNumber, games);
+        if (!teamNames.isEmpty()) {
+            result.setPlayers(playerRepository.getPlayersByTeamName(teamNames, comp));
+        }
+        return result;
     }
 
     @Override

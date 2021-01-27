@@ -13,6 +13,11 @@ public class GamesForWeek {
     private List<GameDTO> games;
     private List<PlayerDTO> players;
 
+    public GamesForWeek(Integer weekNumber, List<GameDTO> games) {
+        this.weekNumber = weekNumber;
+        this.games = games;
+    }
+
     public GamesForWeek(OffsetDateTime deadLine, Integer weekNumber, Boolean fwp,
                         List<GameDTO> games, List<PlayerDTO> players) {
         this.deadLine = deadLine;
