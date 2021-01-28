@@ -221,7 +221,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public WeekNumberAllTeams getAllTeamsByComp(Comp comp) {
-      return new WeekNumberAllTeams(weekRepository.getLatestWeekNumber(comp.getComp()),
+      return new WeekNumberAllTeams(weekRepository.getNumberOfWeeksPresent(comp),
               teamRepository.getAllTeamsByComp(comp));
     }
 

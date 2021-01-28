@@ -43,6 +43,9 @@ public interface WeekRepository extends JpaRepository<Week, Long> {
             nativeQuery = true)
     Long getLatestWeekNumber(@Param("comp") String comp);
 
+    @Query(value = "SELECT COUNT(*) FROM Week w WHERE w.comp = :comp")
+    Long getNumberOfWeeksPresent(@Param("comp") Comp comp);
+
 
     @Query(value = "SELECT w.id FROM Week w WHERE w.number = :weekNumber AND w.comp = :comp")
     Long getWeekId(@Param("weekNumber") Integer weekNumber,
