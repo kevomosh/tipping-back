@@ -5,6 +5,7 @@ import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
+import com.kakuom.finaltipping.responses.WeekNumberAllTeams;
 import com.kakuom.finaltipping.views.*;
 
 import java.time.OffsetDateTime;
@@ -27,7 +28,7 @@ public interface AdminService {
 
     BasicResponse updateTotalScore(Comp comp);
 
-    List<String> getAllTeamsByComp(Comp comp);
+    WeekNumberAllTeams getAllTeamsByComp(Comp comp);
 
 
 }

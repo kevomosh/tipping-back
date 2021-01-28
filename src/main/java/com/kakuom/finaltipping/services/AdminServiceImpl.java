@@ -6,6 +6,7 @@ import com.kakuom.finaltipping.model.*;
 import com.kakuom.finaltipping.repositories.*;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
+import com.kakuom.finaltipping.responses.WeekNumberAllTeams;
 import com.kakuom.finaltipping.views.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -219,8 +220,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<String> getAllTeamsByComp(Comp comp) {
-        return teamRepository.getAllTeamsByComp(comp);
+    public WeekNumberAllTeams getAllTeamsByComp(Comp comp) {
+      return new WeekNumberAllTeams(weekRepository.getLatestWeekNumber(comp.getComp()),
+              teamRepository.getAllTeamsByComp(comp));
     }
 
     @Override

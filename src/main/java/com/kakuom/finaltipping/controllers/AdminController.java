@@ -4,6 +4,7 @@ import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.responses.BasicResponse;
 import com.kakuom.finaltipping.responses.GamesForWeek;
+import com.kakuom.finaltipping.responses.WeekNumberAllTeams;
 import com.kakuom.finaltipping.services.AdminService;
 import com.kakuom.finaltipping.views.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -76,7 +77,7 @@ public class AdminController {
     }
 
     @GetMapping("{competition}/getAllTeams")
-    public List<String> getAllTeams(@PathVariable String competition) {
+    public WeekNumberAllTeams getAllTeams(@PathVariable String competition) {
         return adminService.getAllTeamsByComp(this.getComp(competition));
     }
 
@@ -84,3 +85,4 @@ public class AdminController {
         return competition.equals("nrl") ? Comp.NRL : Comp.AFL;
     }
 }
+
