@@ -249,6 +249,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public GamesForWeek getGamesForWeek(Integer weekNumber, Comp comp) {
+        var userId = getCurrentUserId();
         weekNumber = Math.max(weekNumber, 1);
         weekNumber = Math.min(weekNumber, 25);
 
@@ -260,25 +261,26 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline. Click " +
                     "on latest week button ");
         }
-        return getActualGamesForWeek(weekNumber, comp, gameInfo);
+        return getActualGamesForWeek(weekNumber, comp, gameInfo, userId);
     }
 
     @Override
     public GamesForWeek getLatestGames(Comp comp) {
-
+        var userId = getCurrentUserId();
         var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
+        // TODO FORMAT ERROR MESSAGE DISTINGUISG WEEK NUMBER IN LASTEST SO THAT IT CAN BE USED IN FRONT END
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
             var nextWeekNumber = weekNumber + 1;
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past deadline for latest week. " +
                     "Though you can make picks for the following week which is week number  " + nextWeekNumber);
         }
-        return getActualGamesForWeek(weekNumber, comp, gameInfo);
+        return getActualGamesForWeek(weekNumber, comp, gameInfo, userId);
     }
 
 
-    private GamesForWeek getActualGamesForWeek(Integer weekNumber, Comp comp, WeekInfoDTO gameInfo) {
+    private GamesForWeek getActualGamesForWeek(Integer weekNumber, Comp comp, WeekInfoDTO gameInfo, Long userId) {
         var games = gameRepository.getGamesForWeek(weekNumber, comp);
 
         List<String> teamNames = new ArrayList<>();
@@ -289,9 +291,13 @@ public class UserServiceImpl implements UserService {
                     teamNames.add(gameDto.getHomeTeam());
                     teamNames.add(gameDto.getAwayTeam());
                 });
-
-        return new GamesForWeek(gameInfo.getDeadLine(), gameInfo.getNumber(),
+        var response = new GamesForWeek(gameInfo.getDeadLine(), gameInfo.getNumber(),
                 gameInfo.getFwp(), games, playerRepository.getPlayersByTeamName(teamNames, comp));
+
+
+        pickRepository.findByWeekNumberAndUserId(weekNumber, comp, userId)
+                .ifPresent(h -> response.setPickOfWeek(h));
+        return response;
     }
 
     private Long getCurrentUserId() {

@@ -2,6 +2,7 @@ package com.kakuom.finaltipping.responses;
 
 import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.dto.PlayerDTO;
+import com.kakuom.finaltipping.model.Pick;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -12,6 +13,7 @@ public class GamesForWeek {
     private Boolean fwp;
     private List<GameDTO> games;
     private List<PlayerDTO> players;
+    private Pick pickOfWeek;
 
     public GamesForWeek(Integer weekNumber, List<GameDTO> games) {
         this.weekNumber = weekNumber;
@@ -65,5 +67,15 @@ public class GamesForWeek {
 
     public void setPlayers(List<PlayerDTO> players) {
         this.players = players;
+    }
+
+    public Pick getPickOfWeek() {
+        return pickOfWeek;
+    }
+
+    public void setPickOfWeek(Pick pickOfWeek) {
+        pickOfWeek.setId(null);
+        pickOfWeek.getTeamsSelected().forEach(g -> g.setId(null));
+        this.pickOfWeek = pickOfWeek;
     }
 }

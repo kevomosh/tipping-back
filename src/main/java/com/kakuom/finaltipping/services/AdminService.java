@@ -30,5 +30,7 @@ public interface AdminService {
 
     WeekNumberAllTeams getAllTeamsByComp(Comp comp);
 
+    BasicResponse autoPick();
+
 
 }

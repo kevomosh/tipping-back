@@ -56,4 +56,5 @@ public interface PickRepository extends JpaRepository<Pick, Long> {
             @Param("weekNumber") Integer weekNumber,
             @Param("comp") Comp comp,
             @Param("userId") Long userId);
+
 }

@@ -81,6 +81,11 @@ public class AdminController {
         return adminService.getAllTeamsByComp(this.getComp(competition));
     }
 
+    @PutMapping("autoPick")
+    public BasicResponse autoPick() {
+        return adminService.autoPick();
+    }
+
     private Comp getComp(String competition) {
         return competition.equals("nrl") ? Comp.NRL : Comp.AFL;
     }

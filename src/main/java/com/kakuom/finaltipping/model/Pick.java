@@ -30,6 +30,8 @@ public class Pick {
 
     private Integer extraPoint;
 
+    private Boolean byUser;
+
     @OneToMany(
             mappedBy = "pick",
             cascade = CascadeType.ALL,
@@ -58,6 +60,17 @@ public class Pick {
         this.firstScorer = firstScorer;
         this.score = 0;
         this.extraPoint = 0;
+        this.byUser = true;
+    }
+    public Pick(Integer weekNumber, Comp comp, String name) {
+        this.weekNumber = weekNumber;
+        this.comp = comp;
+        this.name = name;
+        this.score = 0;
+        this.extraPoint = 0;
+        this.byUser = false;
+        this.margin  = 0;
+        this.firstScorer = "";
     }
 
     public void addSelected(Selected selected) {
@@ -149,6 +162,14 @@ public class Pick {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Boolean getByUser() {
+        return byUser;
+    }
+
+    public void setByUser(Boolean byUser) {
+        this.byUser = byUser;
     }
 
     @Override

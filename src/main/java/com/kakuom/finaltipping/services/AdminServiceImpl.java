@@ -1,6 +1,5 @@
 package com.kakuom.finaltipping.services;
 
-import com.kakuom.finaltipping.dto.GameDTO;
 import com.kakuom.finaltipping.enums.Comp;
 import com.kakuom.finaltipping.model.*;
 import com.kakuom.finaltipping.repositories.*;
@@ -112,7 +111,7 @@ public class AdminServiceImpl implements AdminService {
                     if (rgn.equals(sgn)) {
                         if (rgn.equals(2) &&
                                 week.getMargin().equals(pick.getMargin()) &&
-                                result.getTeam().equals(selected.getTeam())
+                                result.getTeam().equals(selected.getTeam()) && pick.getByUser()
                         ) {
                             extraPoint = extraPoint + 10;
                             score = score + 1;
@@ -120,11 +119,11 @@ public class AdminServiceImpl implements AdminService {
                             score = score + 1;
                         } else if (rgn.equals(1) &&
                                 week.getFirstScorer().equals(pick.getFirstScorer()) &&
-                                result.getTeam().equals(selected.getTeam())) {
+                                result.getTeam().equals(selected.getTeam()) && pick.getByUser()) {
                             extraPoint = extraPoint + 3;
                             score = score + 1;
 
-                        } else if (rgn.equals(1) && week.getFirstScorer().equals(pick.getFirstScorer())) {
+                        } else if (rgn.equals(1) && week.getFirstScorer().equals(pick.getFirstScorer()) && pick.getByUser()) {
                             extraPoint = extraPoint + 3;
                         } else if (rgn.equals(1) && result.getTeam().equals(selected.getTeam())) {
                             score = score + 1;
@@ -141,8 +140,6 @@ public class AdminServiceImpl implements AdminService {
             pick.setScore(pick.getScore() + score + extraPoint);
             pickRepository.save(pick);
         }
-
-
         return new BasicResponse("Results added");
     }
 
@@ -173,6 +170,45 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
+    public BasicResponse autoPick() {
+        implementAutoPick(Comp.NRL);
+        implementAutoPick(Comp.AFL);
+        return new BasicResponse("all Done now check");
+    }
+
+    public void implementAutoPick(Comp comp) {
+        var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
+        var deadLine = weekRepository.getDeadlineForWeekNumber(weekNumber, comp)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Week doesn't exist"));
+
+        if (OffsetDateTime.now().isBefore(deadLine)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Before deadLine, relax");
+        }
+        var updated = weekRepository.checkScoreUpdated(weekNumber, comp);
+        if (updated == null || updated) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Total score already updated");
+        }
+
+        var allUserIdsForComp = userRepository.getAllIdsForThoseInComp(comp.getComp());
+        var userIdsThatMadePick = userRepository.getAllIdsForUsersMadePick(weekNumber, comp.getComp());
+
+        var idsWithNoPick =  allUserIdsForComp.stream()
+                .filter(x -> !userIdsThatMadePick.contains(x))
+                .collect(Collectors.toList());
+        var usersNoPick = userRepository.getUsersInIdList(idsWithNoPick);
+
+        var gamesForWeek = gameRepository.getGamesForWeek(weekNumber, comp);
+        for (User user: usersNoPick) {
+            var newPick = new Pick(weekNumber, comp, user.getName());
+            gamesForWeek.stream()
+                    .map(g -> new Selected(g.getGameNumber(), g.getAwayTeam()))
+                    .forEach(newPick::addSelected);
+            user.addPick(newPick);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
     public BasicResponse updateTotalScore(Comp comp) {
         var weekNumber = weekRepository.getLatestWeekNumber(comp.getComp()).intValue();
         var updated = weekRepository.checkScoreUpdated(weekNumber, comp);
@@ -188,7 +224,7 @@ public class AdminServiceImpl implements AdminService {
 
         var idList = userRepository.getAllIdsForUsersMadePick(weekNumber, comp.getComp());
 
-        var relevantUsers = userRepository.getUsersThatMadePick(idList);
+        var relevantUsers = userRepository.getUsersInIdList(idList);
         for (User user : relevantUsers) {
             user.getPicks()
                     .stream()

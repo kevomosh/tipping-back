@@ -66,10 +66,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
                                          @Param("comp") String comp);
 
     @Query(value = "SELECT DISTINCT u FROM User u JOIN FETCH u.picks WHERE u.id IN (:idList) ")
-    List<User> getUsersThatMadePick(@Param("idList") List<Long> idList);
+    List<User> getUsersInIdList(@Param("idList") List<Long> idList);
 
     @Query(value = "SELECT DISTINCT u FROM User u  LEFT JOIN FETCH u.picks WHERE u.id NOT IN (:idList)")
     List<User> getUsersWithNoPick(@Param("idList") List<Long> idList);
+
+    @Query(value = "select distinct gu.user_id from group_user gu where gu.group_id IN " +
+            "(select g.id from groups g where g.comp = :comp)", nativeQuery = true)
+    List<Long> getAllIdsForThoseInComp(@Param("comp") String comp);
 
 
 }
