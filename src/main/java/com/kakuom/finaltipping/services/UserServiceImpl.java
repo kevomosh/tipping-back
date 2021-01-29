@@ -241,7 +241,7 @@ public class UserServiceImpl implements UserService {
             actualUserIds = groupRepository.getIdsInCompGroup(gid, comp.getComp());
         }
         if (actualUserIds.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "wrong info being supplied, " +
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong info being supplied, " +
                     "Please sign in again and retry");
         }
         return actualUserIds;
@@ -273,8 +273,8 @@ public class UserServiceImpl implements UserService {
         // TODO FORMAT ERROR MESSAGE DISTINGUISG WEEK NUMBER IN LASTEST SO THAT IT CAN BE USED IN FRONT END
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
             var nextWeekNumber = weekNumber + 1;
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past deadline for latest week. " +
-                    "Though you can make picks for the following week which is week number  " + nextWeekNumber);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Past deadline for Round " + weekNumber +
+                    ". You can now view picks by other members or make pick for Round " + nextWeekNumber);
         }
         return getActualGamesForWeek(weekNumber, comp, gameInfo, userId);
     }
