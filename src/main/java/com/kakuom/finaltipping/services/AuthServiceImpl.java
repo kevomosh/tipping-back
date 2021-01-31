@@ -145,19 +145,25 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public BasicResponse changePassword(String password, String token) {
-        var user = passTokenRepository.getUserByToken(UUID.fromString(token))
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token, " +
-                        "please go to change password page"));
+        try {
+            var user = passTokenRepository.getUserByToken(UUID.fromString(token))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token, " +
+                            "Click on forgot password button."));
 
 
-        if (OffsetDateTime.now().isAfter(user.getPassToken().getExpiry())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token has expired," +
-                    " please go to change password page");
+            if (OffsetDateTime.now().isAfter(user.getPassToken().getExpiry())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Token has expired," +
+                        " please go to change password page");
+            }
+
+            user.setPassword(encoder.encode(password));
+            user.setPassToken(null);
+            userRepository.save(user);
+
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token, " +
+                    "Click on forgot password button.");
         }
-
-        user.setPassword(encoder.encode(password));
-        user.setPassToken(null);
-        userRepository.save(user);
 
         return new BasicResponse("Password changed successfully. You can now Log in with the new password");
     }
@@ -183,7 +189,7 @@ public class AuthServiceImpl implements AuthService {
         msg.setSubject("Change Password for Tipping Comp");
         msg.setText("Please click on the link below to reset your password. \n" +
                 "The link will expire in 24 hrs \n" +
-                "www.tipping.kakuom.com/changePassword?token=" + token);
+                "https://tipping.kakuom.com/auth/reset-password?token=" + token);
         msg.setFrom("admin@kakuom.com");
         mailSender.send(msg);
     }

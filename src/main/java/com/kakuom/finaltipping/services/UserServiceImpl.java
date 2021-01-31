@@ -259,7 +259,7 @@ public class UserServiceImpl implements UserService {
 
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline. Click " +
-                    "on latest week button ");
+                    "on latest round button ");
         }
         return getActualGamesForWeek(weekNumber, comp, gameInfo, userId);
     }

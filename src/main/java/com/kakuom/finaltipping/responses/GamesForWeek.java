@@ -75,6 +75,9 @@ public class GamesForWeek {
 
     public void setPickOfWeek(Pick pickOfWeek) {
         pickOfWeek.setId(null);
+        pickOfWeek.setComp(null);
+        pickOfWeek.setByUser(null);
+        pickOfWeek.setWeekNumber(null);
         pickOfWeek.getTeamsSelected().forEach(g -> g.setId(null));
         this.pickOfWeek = pickOfWeek;
     }
