@@ -11,7 +11,7 @@ import java.util.List;
 public class CreateWeekView {
     @NotNull
     @Min(value = 1)
-    @Max(value = 40)
+    @Max(value = 50)
     private Integer weekNumber;
 
     @NotNull

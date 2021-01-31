@@ -251,15 +251,16 @@ public class UserServiceImpl implements UserService {
     public GamesForWeek getGamesForWeek(Integer weekNumber, Comp comp) {
         var userId = getCurrentUserId();
         weekNumber = Math.max(weekNumber, 1);
-        weekNumber = Math.min(weekNumber, 25);
+        weekNumber = Math.min(weekNumber, 50);
 
 
         var gameInfo = getWeekInfo(weekNumber, weekNumber + 1, comp.getComp()).get(0);
 
 
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline. Click " +
-                    "on latest round button ");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline for round " + weekNumber +
+                    " To make pick for latest round, click " +
+                    "on latest round link or you can view picks for others for round  " + weekNumber);
         }
         return getActualGamesForWeek(weekNumber, comp, gameInfo, userId);
     }

@@ -63,6 +63,9 @@ public class AuthServiceImpl implements AuthService {
         if (!validEmail(registerView.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter valid email");
         }
+        if (!passwordIsValid(registerView.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter valid password");
+        }
         if (userRepository.existsByEmail(registerView.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
@@ -92,6 +95,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse loginUser(LoginView loginView) {
+        if (!passwordIsValid(loginView.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter valid password");
+        }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginView.getEmail(),
@@ -145,6 +151,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public BasicResponse changePassword(String password, String token) {
+        if (!passwordIsValid(password)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter valid password");
+        }
         try {
             UUID uuid = UUID.fromString(token);
             var user = passTokenRepository.getUserByToken(uuid)
@@ -200,5 +209,10 @@ public class AuthServiceImpl implements AuthService {
                 Pattern.compile("^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$")
                         .asPredicate();
         return IS_EMAIL_VALID.test(email);
+    }
+
+    private boolean passwordIsValid(String password) {
+        String pattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$";
+        return password.matches(pattern);
     }
 }
