@@ -146,7 +146,8 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public BasicResponse changePassword(String password, String token) {
         try {
-            var user = passTokenRepository.getUserByToken(UUID.fromString(token))
+            UUID uuid = UUID.fromString(token);
+            var user = passTokenRepository.getUserByToken(uuid)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid token, " +
                             "Click on forgot password button."));
 
