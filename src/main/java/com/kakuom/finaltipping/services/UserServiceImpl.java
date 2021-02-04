@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
                     });
 
-            return new BasicResponse(comp.getComp() + " pick for week " + weekNumber + " created or updated");
+            return new BasicResponse(comp.getComp().toUpperCase() + " pick for Round " + weekNumber + " created or updated");
 
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline for "
@@ -227,6 +227,7 @@ public class UserServiceImpl implements UserService {
                 pagedResults = userRepository.findAflResults(actualUserIds, pageable);
             }
         }
+
         var latestWeekNumber = weekRepository.getLatestWeekNumber(comp.getComp());
         var t = pagedResults.getSize();
         return new ResultsForWeek(pagedResults.getTotalElements(),pagedResults.getNumber(),
@@ -259,7 +260,7 @@ public class UserServiceImpl implements UserService {
 
         if (OffsetDateTime.now().isAfter(gameInfo.getDeadLine())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline for round " + weekNumber +
-                    " To make pick for latest round, click " +
+                    ". To make pick for latest round, click " +
                     "on latest round link or you can view picks for others for round  " + weekNumber);
         }
         return getActualGamesForWeek(weekNumber, comp, gameInfo, userId);

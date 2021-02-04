@@ -49,11 +49,11 @@ public class AuthController {
         return authService.changePassword(view.getNewPassword().strip(), token);
     }
 
-//    @PostMapping("createDefaultGroup")
-//    public BasicResponse createDefaultGroup(){
-//
-//        return authService.createDefaultGroup();
-//    }
+    @PostMapping("createDefaultGroup")
+    public BasicResponse createDefaultGroup(){
+
+        return authService.createDefaultGroup();
+    }
 
 
 }
