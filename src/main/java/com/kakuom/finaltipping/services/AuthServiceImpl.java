@@ -28,10 +28,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -60,21 +57,22 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public BasicResponse registerUser(RegisterView registerView) {
-        if (!validEmail(registerView.getEmail())) {
+        if (!validEmail(registerView.getEmail().toLowerCase(Locale.ENGLISH))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter valid email");
         }
         if (!passwordIsValid(registerView.getPassword())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Enter valid password");
         }
-        if (userRepository.existsByEmail(registerView.getEmail())) {
+        if (userRepository.existsByEmail(registerView.getEmail().toLowerCase(Locale.ENGLISH))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already exists");
         }
         if (userRepository.existsByName(registerView.getName())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name already exists");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nickname already exists");
 
         }
 
-        User newUser = new User(StringUtils.capitalize(registerView.getName()), registerView.getEmail(),
+        User newUser = new User(StringUtils.capitalize(registerView.getName()),
+                registerView.getEmail().toLowerCase(Locale.ENGLISH),
                 encoder.encode(registerView.getPassword()), Role.USER);
 
 
@@ -100,7 +98,7 @@ public class AuthServiceImpl implements AuthService {
         }
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginView.getEmail(),
+                        loginView.getEmail().toLowerCase(Locale.ENGLISH),
                         loginView.getPassword()
                 )
         );
@@ -125,11 +123,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public BasicResponse createPasswordToken(String email) {
-        if (!validEmail(email)) {
+        if (!validEmail(email.toLowerCase(Locale.ENGLISH))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please enter valid email");
         }
 
-        var user = userRepository.findByEmail(email)
+        var user = userRepository.findByEmail(email.toLowerCase(Locale.ENGLISH))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesnt exist"));
 
         passTokenRepository.getTokenByUserId(user.getId())

@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
                     });
 
-            return new BasicResponse(comp.getComp().toUpperCase() + " pick for Round " + weekNumber + " created or updated");
+            return new BasicResponse(comp.getComp().toUpperCase() + " Pick for Round " + weekNumber + " Updated");
 
         } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Its after deadline for "
@@ -312,7 +312,7 @@ public class UserServiceImpl implements UserService {
 
         Query r = em.createNativeQuery(
                 "select w.dead_line, w.number ," +
-                        " (select exists(select 1 from week w where w.number = :nextWeekNumber))as nxt," +
+                        " (select exists(select 1 from week w where w.number = :nextWeekNumber and w.comp = :comp))as nxt," +
                         " w.margin , w.first_scorer as fs from week w where w.number = :weekNumber and w.comp = :comp",
                 "WeekInfoDtoMapping"
         ).setParameter("weekNumber", weekNumber)
