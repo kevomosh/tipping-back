@@ -121,11 +121,13 @@ public class AuthServiceImpl implements AuthService {
         return response;
     }
 
+    // TODO FORGOT PASSWORD STILL CASE SENSITIVE
     @Override
     public BasicResponse createPasswordToken(String email) {
         if (!validEmail(email.toLowerCase(Locale.ENGLISH))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Please enter valid email");
         }
+
 
         var user = userRepository.findByEmail(email.toLowerCase(Locale.ENGLISH))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesnt exist"));
